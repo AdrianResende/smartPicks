@@ -1,1 +1,65 @@
-// app global css in SCSS form
+// Importar fonte Inter do Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+* {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+// Garantir que todos os componentes Quasar usem Inter
+.q-btn,
+.q-input,
+.q-field,
+.q-card,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+.text-h1,
+.text-h2,
+.text-h3,
+.text-h4,
+.text-h5,
+.text-h6,
+.text-subtitle1,
+.text-subtitle2,
+.text-body1,
+.text-body2,
+.text-caption,
+.text-overline {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.q-page {
+  min-height: 100vh;
+}
