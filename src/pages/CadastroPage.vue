@@ -1,6 +1,6 @@
 <template>
-  <div class="login-container">
-    <div class="login-layout">
+  <div class="cadastro-container">
+    <div class="cadastro-layout">
       <div class="image-section">
         <div class="image-content">
           <div class="brand-logo">
@@ -21,9 +21,20 @@
             <h3 class="form-title">Faça seu Cadastro</h3>
           </div>
 
-          <q-card class="login-card" flat>
+          <q-card class="cadastro-card" flat>
             <q-card-section class="q-pa-lg">
               <q-form ref="formRef" @submit="onSubmit" class="q-gutter-md">
+                <q-input
+                  v-model="nome"
+                  outlined
+                  type="text"
+                  label="Nome completo"
+                  :rules="[(val) => !!val || 'Campo obrigatório']"
+                  class="full-width q-mb-md"
+                  size="lg"
+                >
+                </q-input>
+
                 <q-input
                   v-model="email"
                   outlined
@@ -88,7 +99,6 @@
                   style="background-color: #0582a6"
                   text-color="white"
                   label="Cadastrar"
-                  to="/login"
                   class="full-width large-btn"
                   size="lg"
                   :style="{ fontStyle: 'italic' }"
@@ -114,6 +124,7 @@
 import { defineComponent, ref, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import type { QForm } from 'quasar';
+import { api } from 'src/boot/axios';
 
 export default defineComponent({
   name: 'CadastroPage',
@@ -125,6 +136,7 @@ export default defineComponent({
     const confirmPassword = ref('');
     const cpf = ref('');
     const dataNascimento = ref('');
+    const isSubmitting = ref(false);
 
     const formatCpf = (value: string) => {
       const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -225,17 +237,23 @@ export default defineComponent({
     );
 
     const requiredFieldsFilled = computed(() =>
-      [email.value, password.value, confirmPassword.value, cpf.value, dataNascimento.value].every(
-        (field) => !!field,
-      ),
+      [
+        nome.value,
+        email.value,
+        password.value,
+        confirmPassword.value,
+        cpf.value,
+        dataNascimento.value,
+      ].every((field) => !!field),
     );
 
     const isSubmitDisabled = computed(
-      () => !requiredFieldsFilled.value || isPasswordMismatch.value,
+      () => isSubmitting.value || !requiredFieldsFilled.value || isPasswordMismatch.value,
     );
 
     const resetForm = () => {
       formRef.value?.resetValidation();
+      nome.value = '';
       email.value = '';
       password.value = '';
       confirmPassword.value = '';
@@ -278,18 +296,27 @@ export default defineComponent({
         return;
       }
 
-      console.log('Cadastro data:', {
-        nome: nome.value,
-        email: email.value,
-        password: password.value,
-        confirmPassword: confirmPassword.value,
-        cpf: cpfFormatado,
-        cpfRaw: cpf.value,
-        dataNascimento: dataNascimento.value,
-        dataNascimentoISO,
-      });
-      toast.success('Cadastro realizado com sucesso!');
-      resetForm();
+      try {
+        isSubmitting.value = true;
+
+        const response = await api.post('/auth/register', {
+          name: nome.value,
+          email: email.value,
+          password: password.value,
+          cpf: cpfFormatado,
+          birthDate: dataNascimentoISO,
+        });
+
+        toast.success(response.data?.message || 'Cadastro realizado com sucesso!');
+        resetForm();
+      } catch (error) {
+        const message =
+          (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          'Não foi possível realizar o cadastro.';
+        toast.error(message);
+      } finally {
+        isSubmitting.value = false;
+      }
     };
 
     return {
@@ -304,13 +331,14 @@ export default defineComponent({
       dataNascimentoRules,
       isPasswordMismatch,
       isSubmitDisabled,
+      isSubmitting,
       onSubmit,
     };
   },
 });
 </script>
 <style scoped>
-.login-container {
+.cadastro-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #2ebac6 0%, #0582a6 100%);
   display: flex;
@@ -319,17 +347,17 @@ export default defineComponent({
   padding: 0;
 }
 
-.login-layout {
-  width: 90%;
-  max-width: 1000px;
-  height: 80vh;
-  max-height: 600px;
+.cadastro-layout {
+  width: 92%;
+  max-width: 1100px;
+  min-height: 85vh;
   display: flex;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   overflow: hidden;
+  padding: 1.5rem 0;
 }
 
 /* Seção da Imagem (Esquerda) */
@@ -416,14 +444,15 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  padding-left: 3rem;
+  padding: 2.5rem;
+  padding-left: 3.5rem;
   background: white;
+  overflow-y: auto;
 }
 
 .form-container {
   width: 100%;
-  max-width: 450px;
+  max-width: 520px;
 }
 
 .form-header {
@@ -448,9 +477,10 @@ export default defineComponent({
   margin: 0;
 }
 
-.login-card {
+.cadastro-card {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 /* Estilos da seção de cadastro */
@@ -547,11 +577,12 @@ export default defineComponent({
 
 /* Responsividade */
 @media (max-width: 768px) {
-  .login-layout {
+  .cadastro-layout {
     flex-direction: column;
     height: auto;
-    min-height: 80vh;
+    min-height: auto;
     width: 95%;
+    padding: 1rem 0;
   }
 
   .image-section {
