@@ -108,9 +108,13 @@
               </q-form>
 
               <div class="text-center q-mt-md">
-                <router-link to="/login" class="cadastre-link"
-                  >Já tem uma conta? Faça login</router-link
-                >
+                <q-btn
+                  to="/"
+                  flat
+                  no-caps
+                  class="cadastre-link"
+                  label="Já tem uma conta? Faça login"
+                />
               </div>
             </q-card-section>
           </q-card>
@@ -352,12 +356,13 @@ export default defineComponent({
   max-width: 1100px;
   min-height: 85vh;
   display: flex;
+  align-items: stretch;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   overflow: hidden;
-  padding: 1.5rem 0;
+  padding: 0;
 }
 
 /* Seção da Imagem (Esquerda) */
@@ -444,7 +449,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5rem;
+  padding: 3rem;
   padding-left: 3.5rem;
   background: white;
   overflow-y: auto;
@@ -453,6 +458,11 @@ export default defineComponent({
 .form-container {
   width: 100%;
   max-width: 520px;
+}
+
+.image-section,
+.form-section {
+  min-height: 100%;
 }
 
 .form-header {
@@ -492,13 +502,7 @@ export default defineComponent({
 }
 
 .cadastre-link {
-  color: #0582a6;
   font-weight: 700;
-  cursor: pointer;
-}
-
-.cadastre-link:hover {
-  text-decoration: underline;
 }
 
 .signup-btn {
@@ -582,7 +586,6 @@ export default defineComponent({
     height: auto;
     min-height: auto;
     width: 95%;
-    padding: 1rem 0;
   }
 
   .image-section {
@@ -602,8 +605,8 @@ export default defineComponent({
   }
 
   .form-section {
-    padding: 1rem;
-    padding-left: 1rem;
+    padding: 1.5rem;
+    padding-left: 1.5rem;
   }
 
   .separator-container {
