@@ -76,29 +76,47 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import { toast } from 'vue3-toastify';
+import { api } from 'src/boot/axios';
 
 export default defineComponent({
   name: 'LoginPage',
   setup() {
     const email = ref('');
     const password = ref('');
+    const isSubmitting = ref(false);
 
-    const isLoginDisabled = computed(() => !email.value || !password.value);
+    const isLoginDisabled = computed(() => isSubmitting.value || !email.value || !password.value);
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
       if (isLoginDisabled.value) {
         toast.error('Informe e-mail e senha para continuar.');
         return;
       }
 
-      console.log('Login data:', { email: email.value, password: password.value });
-      toast.success('Login realizado com sucesso!');
+      try {
+        isSubmitting.value = true;
+
+        const response = await api.post('/auth/login', {
+          email: email.value,
+          password: password.value,
+        });
+
+        toast.success(response.data?.message || 'Login realizado com sucesso!');
+      } catch (error) {
+        const message =
+          (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          'Não foi possível realizar o login.';
+        toast.error(message);
+      } finally {
+        isSubmitting.value = false;
+      }
     };
 
     return {
       email,
       password,
       onSubmit,
+      isSubmitting,
       isLoginDisabled,
     };
   },
