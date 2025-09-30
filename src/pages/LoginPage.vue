@@ -54,6 +54,7 @@
                   class="full-width large-btn"
                   size="lg"
                   :style="{ fontStyle: 'italic' }"
+                  :disable="isLoginDisabled"
                   no-caps
                 />
               </q-form>
@@ -61,7 +62,7 @@
               <div class="text-center q-mt-md">
                 <p class="signup-text q-mb-md">
                   Não tem uma conta?
-                  <span class="cadastre-link" to="/cadastro">Cadastre-se</span>
+                  <router-link to="/cadastro" class="cadastre-link">Cadastre-se</router-link>
                 </p>
               </div>
             </q-card-section>
@@ -73,7 +74,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
+import { toast } from 'vue3-toastify';
 
 export default defineComponent({
   name: 'LoginPage',
@@ -81,15 +83,23 @@ export default defineComponent({
     const email = ref('');
     const password = ref('');
 
+    const isLoginDisabled = computed(() => !email.value || !password.value);
+
     const onSubmit = () => {
+      if (isLoginDisabled.value) {
+        toast.error('Informe e-mail e senha para continuar.');
+        return;
+      }
+
       console.log('Login data:', { email: email.value, password: password.value });
-      alert(`Login: ${email.value}`);
+      toast.success('Login realizado com sucesso!');
     };
 
     return {
       email,
       password,
       onSubmit,
+      isLoginDisabled,
     };
   },
 });
@@ -250,6 +260,7 @@ export default defineComponent({
   color: #0582a6;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .cadastre-link:hover {
