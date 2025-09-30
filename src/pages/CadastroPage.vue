@@ -1,215 +1,592 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="cadastro-container">
-      <div class="text-center q-mb-lg">
-        <q-avatar size="80px" color="primary" text-color="white" class="q-mb-md">
-          <q-icon name="person_add" size="40px" />
-        </q-avatar>
-        <h4 class="text-primary q-ma-none">Criar Conta</h4>
-        <p class="text-grey-6">Junte-se ao SmartPicks</p>
+  <div class="login-container">
+    <div class="login-layout">
+      <div class="image-section">
+        <div class="image-content">
+          <div class="brand-logo">
+            <q-icon name="psychology" size="80px" color="white" />
+            <h2 class="brand-title">SmartPicks</h2>
+            <p class="brand-subtitle">Sua plataforma inteligente de escolhas</p>
+          </div>
+        </div>
       </div>
 
-      <q-form @submit="handleSubmit" class="q-gutter-md">
-        <q-input
-          v-model="form.nome"
-          type="text"
-          label="Nome completo"
-          outlined
-          :rules="[
-            (val) => !!val || 'Nome é obrigatório',
-            (val) => val.length >= 2 || 'Nome deve ter pelo menos 2 caracteres',
-          ]"
-          hint="Digite seu nome completo"
-        >
-          <template v-slot:prepend>
-            <q-icon name="person" />
-          </template>
-        </q-input>
-
-        <q-input
-          v-model="form.email"
-          type="email"
-          label="E-mail"
-          outlined
-          :rules="[
-            (val) => !!val || 'E-mail é obrigatório',
-            (val) => /.+@.+\..+/.test(val) || 'E-mail deve ser válido',
-          ]"
-          hint="Digite um e-mail válido"
-        >
-          <template v-slot:prepend>
-            <q-icon name="email" />
-          </template>
-        </q-input>
-
-        <q-input
-          v-model="form.senha"
-          :type="showPassword ? 'text' : 'password'"
-          label="Senha"
-          outlined
-          :rules="[
-            (val) => !!val || 'Senha é obrigatória',
-            (val) => val.length >= 6 || 'Senha deve ter pelo menos 6 caracteres',
-          ]"
-          hint="Mínimo 6 caracteres"
-          counter
-          maxlength="50"
-        >
-          <template v-slot:prepend>
-            <q-icon name="lock" />
-          </template>
-          <template v-slot:append>
-            <q-icon
-              :name="showPassword ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="showPassword = !showPassword"
-            />
-          </template>
-        </q-input>
-
-        <q-input
-          v-model="form.confirmarSenha"
-          :type="showConfirmPassword ? 'text' : 'password'"
-          label="Confirmar senha"
-          outlined
-          :rules="[
-            (val) => !!val || 'Confirmação de senha é obrigatória',
-            (val) => val === form.senha || 'As senhas não coincidem',
-          ]"
-          hint="Digite a senha novamente"
-        >
-          <template v-slot:prepend>
-            <q-icon name="lock_outline" />
-          </template>
-          <template v-slot:append>
-            <q-icon
-              :name="showConfirmPassword ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="showConfirmPassword = !showConfirmPassword"
-            />
-          </template>
-        </q-input>
-
-        <q-checkbox
-          v-model="form.aceitarTermos"
-          label="Aceito os termos de uso e política de privacidade"
-          :rules="[(val: boolean) => val || 'Você deve aceitar os termos']"
-          class="q-mt-md"
-        />
-
-        <q-btn
-          type="submit"
-          label="Criar Conta"
-          color="primary"
-          class="full-width"
-          size="lg"
-          :loading="loading"
-          :disable="loading"
-        >
-          <template v-slot:loading>
-            <q-spinner-hourglass class="on-left" />
-            Criando conta...
-          </template>
-        </q-btn>
-      </q-form>
-
-      <q-separator spaced class="q-my-lg" />
-
-      <div class="text-center">
-        <p class="text-grey-6 q-mb-md">Já tem uma conta?</p>
-        <q-btn flat color="primary" label="Fazer Login" to="/" no-caps />
+      <div class="separator-container">
+        <q-separator vertical class="separator" />
       </div>
 
-      <!-- Notificações -->
-      <q-banner
-        v-if="mensagem"
-        :class="mensagemTipo === 'success' ? 'bg-positive text-white' : 'bg-negative text-white'"
-        class="q-mt-md"
-        rounded
-      >
-        <template v-slot:avatar>
-          <q-icon :name="mensagemTipo === 'success' ? 'check_circle' : 'error'" />
-        </template>
-        {{ mensagem }}
-        <template v-slot:action>
-          <q-btn flat color="white" icon="close" @click="mensagem = ''" />
-        </template>
-      </q-banner>
+      <div class="form-section">
+        <div class="form-container">
+          <div class="form-header">
+            <h3 class="form-title">Faça seu Cadastro</h3>
+          </div>
+
+          <q-card class="login-card" flat>
+            <q-card-section class="q-pa-lg">
+              <q-form ref="formRef" @submit="onSubmit" class="q-gutter-md">
+                <q-input
+                  v-model="email"
+                  outlined
+                  type="email"
+                  label="E-mail"
+                  :rules="[(val) => !!val || 'Campo obrigatório']"
+                  class="full-width q-mb-md"
+                  size="lg"
+                >
+                </q-input>
+
+                <q-input
+                  v-model="password"
+                  outlined
+                  type="password"
+                  label="Senha"
+                  :rules="[(val) => !!val || 'Campo obrigatório']"
+                  class="full-width q-mb-md"
+                  size="lg"
+                >
+                </q-input>
+                <q-input
+                  v-model="confirmPassword"
+                  outlined
+                  type="password"
+                  label="Confirme a Senha"
+                  :rules="[(val) => !!val || 'Campo obrigatório']"
+                  class="full-width q-mb-md"
+                  size="lg"
+                  :error="isPasswordMismatch"
+                  error-message="As senhas não conferem"
+                >
+                </q-input>
+                <q-input
+                  v-model="cpf"
+                  outlined
+                  type="text"
+                  label="CPF"
+                  :rules="cpfRules"
+                  class="full-width q-mb-md"
+                  size="lg"
+                  mask="###.###.###-##"
+                  fill-mask
+                  unmasked-value
+                >
+                </q-input>
+                <q-input
+                  v-model="dataNascimento"
+                  outlined
+                  type="text"
+                  label="Data de Nascimento"
+                  :rules="dataNascimentoRules"
+                  class="full-width q-mb-md"
+                  size="lg"
+                  mask="##/##/####"
+                  fill-mask
+                >
+                </q-input>
+
+                <q-btn
+                  type="submit"
+                  style="background-color: #0582a6"
+                  text-color="white"
+                  label="Cadastrar"
+                  to="/login"
+                  class="full-width large-btn"
+                  size="lg"
+                  :style="{ fontStyle: 'italic' }"
+                  :disable="isSubmitDisabled"
+                  no-caps
+                />
+              </q-form>
+
+              <div class="text-center q-mt-md">
+                <router-link to="/login" class="cadastre-link"
+                  >Já tem uma conta? Faça login</router-link
+                >
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, ref, computed } from 'vue';
+import { toast } from 'vue3-toastify';
+import type { QForm } from 'quasar';
 
 export default defineComponent({
   name: 'CadastroPage',
-
   setup() {
-    const router = useRouter();
+    const nome = ref('');
+    const formRef = ref<QForm | null>(null);
+    const email = ref('');
+    const password = ref('');
+    const confirmPassword = ref('');
+    const cpf = ref('');
+    const dataNascimento = ref('');
 
-    const form = ref({
-      nome: '',
-      email: '',
-      senha: '',
-      confirmarSenha: '',
-      aceitarTermos: false,
-    });
-
-    const mensagem = ref('');
-    const mensagemTipo = ref<'success' | 'error'>('success');
-    const loading = ref(false);
-    const showPassword = ref(false);
-    const showConfirmPassword = ref(false);
-
-    const handleSubmit = async () => {
-      try {
-        loading.value = true;
-
-        // Simulação de cadastro (substitua pela lógica real da API)
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        mensagem.value = 'Conta criada com sucesso! Redirecionando...';
-        mensagemTipo.value = 'success';
-
-        // Redirecionar para login após sucesso
-        setTimeout(() => {
-          void router.push('/');
-        }, 2000);
-      } catch (error: unknown) {
-        console.error('Erro ao criar conta:', error);
-        mensagem.value = 'Erro ao criar conta. Tente novamente.';
-        mensagemTipo.value = 'error';
-      } finally {
-        loading.value = false;
+    const formatCpf = (value: string) => {
+      const digits = value.replace(/\D/g, '').slice(0, 11);
+      if (digits.length !== 11) {
+        return digits;
       }
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+    };
+
+    const parseBrazilianDate = (value: string) => {
+      const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (!match) {
+        return null;
+      }
+
+      const [, dayStr, monthStr, yearStr] = match;
+      const day = Number(dayStr);
+      const monthIndex = Number(monthStr) - 1;
+      const year = Number(yearStr);
+      const date = new Date(year, monthIndex, day);
+      const today = new Date();
+
+      if (
+        date.getFullYear() !== year ||
+        date.getMonth() !== monthIndex ||
+        date.getDate() !== day ||
+        year < 1900 ||
+        date > today
+      ) {
+        return null;
+      }
+
+      return date;
+    };
+
+    const isValidBrazilianDate = (value: string) => parseBrazilianDate(value) !== null;
+
+    const isAdult = (value: string) => {
+      const birthDate = parseBrazilianDate(value);
+      if (!birthDate) {
+        return false;
+      }
+
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      return age >= 18;
+    };
+
+    const toIsoDate = (value: string) => {
+      const date = parseBrazilianDate(value);
+      if (!date) {
+        return null;
+      }
+      return date.toISOString().split('T')[0];
+    };
+
+    const isValidCpf = (value: string) => {
+      const digits = value.replace(/\D/g, '');
+      if (digits.length !== 11 || /^([0-9])\1+$/.test(digits)) {
+        return false;
+      }
+
+      const calculateCheckDigit = (length: number) => {
+        let sum = 0;
+        for (let i = 0; i < length; i += 1) {
+          sum += Number(digits[i]) * (length + 1 - i);
+        }
+        const remainder = (sum * 10) % 11;
+        return remainder === 10 ? 0 : remainder;
+      };
+
+      const firstDigit = calculateCheckDigit(9);
+      const secondDigit = calculateCheckDigit(10);
+
+      return firstDigit === Number(digits[9]) && secondDigit === Number(digits[10]);
+    };
+
+    const cpfRules: Array<(val: string | null) => true | string> = [
+      (val) => !!val || 'Campo obrigatório',
+      (val) => (!!val && val.replace(/\D/g, '').length === 11) || 'CPF deve ter 11 dígitos',
+      (val) => (!!val && isValidCpf(val)) || 'CPF inválido',
+    ];
+
+    const dataNascimentoRules: Array<(val: string | null) => true | string> = [
+      (val) => !!val || 'Campo obrigatório',
+      (val) => (!!val && isValidBrazilianDate(val)) || 'Data inválida',
+      (val) => (!!val && isAdult(val)) || 'É necessário ter pelo menos 18 anos',
+    ];
+
+    const isPasswordMismatch = computed(
+      () => !!confirmPassword.value && password.value !== confirmPassword.value,
+    );
+
+    const requiredFieldsFilled = computed(() =>
+      [email.value, password.value, confirmPassword.value, cpf.value, dataNascimento.value].every(
+        (field) => !!field,
+      ),
+    );
+
+    const isSubmitDisabled = computed(
+      () => !requiredFieldsFilled.value || isPasswordMismatch.value,
+    );
+
+    const resetForm = () => {
+      formRef.value?.resetValidation();
+      email.value = '';
+      password.value = '';
+      confirmPassword.value = '';
+      cpf.value = '';
+      dataNascimento.value = '';
+    };
+
+    const onSubmit = async () => {
+      const isFormValid = await formRef.value?.validate();
+      if (!isFormValid) {
+        toast.error('Corrija os campos destacados antes de continuar.');
+        return;
+      }
+
+      if (!isValidCpf(cpf.value)) {
+        toast.error('Informe um CPF válido.');
+        return;
+      }
+
+      if (password.value !== confirmPassword.value) {
+        toast.error('As senhas não coincidem.');
+        return;
+      }
+
+      if (!isValidBrazilianDate(dataNascimento.value)) {
+        toast.error('Informe uma data de nascimento válida (DD/MM/AAAA).');
+        return;
+      }
+
+      if (!isAdult(dataNascimento.value)) {
+        toast.error('É necessário ter pelo menos 18 anos para se cadastrar.');
+        return;
+      }
+
+      const cpfFormatado = formatCpf(cpf.value);
+      const dataNascimentoISO = toIsoDate(dataNascimento.value);
+
+      if (!dataNascimentoISO) {
+        toast.error('Não foi possível converter a data de nascimento.');
+        return;
+      }
+
+      console.log('Cadastro data:', {
+        nome: nome.value,
+        email: email.value,
+        password: password.value,
+        confirmPassword: confirmPassword.value,
+        cpf: cpfFormatado,
+        cpfRaw: cpf.value,
+        dataNascimento: dataNascimento.value,
+        dataNascimentoISO,
+      });
+      toast.success('Cadastro realizado com sucesso!');
+      resetForm();
     };
 
     return {
-      form,
-      mensagem,
-      mensagemTipo,
-      loading,
-      showPassword,
-      showConfirmPassword,
-      handleSubmit,
+      formRef,
+      email,
+      password,
+      nome,
+      confirmPassword,
+      cpf,
+      dataNascimento,
+      cpfRules,
+      dataNascimentoRules,
+      isPasswordMismatch,
+      isSubmitDisabled,
+      onSubmit,
     };
   },
 });
 </script>
-
 <style scoped>
-.cadastro-container {
-  width: 100%;
-  max-width: 450px;
-  padding: 2rem;
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2ebac6 0%, #0582a6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-@media (max-width: 600px) {
-  .cadastro-container {
+.login-layout {
+  width: 90%;
+  max-width: 1000px;
+  height: 80vh;
+  max-height: 600px;
+  display: flex;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Seção da Imagem (Esquerda) */
+.image-section {
+  flex: 1;
+  background: linear-gradient(135deg, #0582a6 0%, #2ebac6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding-right: 2rem;
+}
+
+.image-content {
+  text-align: center;
+  color: white;
+  z-index: 2;
+  position: relative;
+}
+
+.brand-logo {
+  margin-bottom: 2rem;
+}
+
+.brand-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.brand-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Elementos Decorativos */
+.decorative-elements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.floating-element {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.element-1 {
+  width: 120px;
+  height: 120px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.element-2 {
+  width: 80px;
+  height: 80px;
+  top: 70%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.element-3 {
+  width: 60px;
+  height: 60px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+/* Seção do Formulário (Direita) */
+.form-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  padding-left: 3rem;
+  background: white;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 450px;
+}
+
+.form-header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.form-title {
+  color: #0f4c75;
+  font-size: 2rem;
+  font-weight: 600;
+  font-style: italic;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.form-subtitle {
+  color: #7f8c8d;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.login-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos da seção de cadastro */
+.signup-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 1.5rem;
+}
+
+.cadastre-link {
+  color: #0582a6;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cadastre-link:hover {
+  text-decoration: underline;
+}
+
+.signup-btn {
+  color: #0582a6;
+  font-weight: 600;
+  font-size: 16px;
+  margin-top: 1rem;
+}
+
+.signup-btn:hover {
+  background-color: rgba(5, 130, 166, 0.1);
+}
+
+/* Estilos dos Campos de Input */
+.large-input {
+  width: 100%;
+  display: block;
+}
+
+.large-input :deep(.q-field__control) {
+  height: 60px;
+  border: 3px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.large-input :deep(.q-field__control):hover {
+  border-color: #0582a6;
+}
+
+.large-input :deep(.q-field__control):focus-within {
+  border-color: #0582a6;
+  border-width: 3px;
+  box-shadow: 0 0 0 2px rgba(5, 130, 166, 0.2);
+}
+
+.large-input :deep(.q-field__native) {
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.large-input :deep(.q-field__label) {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+}
+
+.large-input :deep(.q-field__prepend) {
+  padding-left: 16px;
+}
+
+/* Estilo do Botão Grande */
+.large-btn {
+  height: 60px !important;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.large-btn :deep(.q-btn__content) {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Animações */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .login-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 80vh;
+    width: 95%;
+  }
+
+  .image-section {
+    flex: 0 0 200px;
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .brand-subtitle {
+    font-size: 1rem;
+  }
+
+  .image-section {
+    padding-right: 1rem;
+  }
+
+  .form-section {
     padding: 1rem;
-    max-width: 100%;
+    padding-left: 1rem;
+  }
+
+  .separator-container {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section {
+    padding: 0.5rem;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
   }
 }
 </style>
