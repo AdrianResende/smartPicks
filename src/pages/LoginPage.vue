@@ -75,40 +75,40 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from 'src/stores/auth';
 import { toast } from 'vue3-toastify';
-import { api } from 'src/boot/axios';
 
 export default defineComponent({
   name: 'LoginPage',
   setup() {
+    const router = useRouter();
+    const authStore = useAuthStore();
     const email = ref('');
     const password = ref('');
-    const isSubmitting = ref(false);
 
-    const isLoginDisabled = computed(() => isSubmitting.value || !email.value || !password.value);
+    const isLoginDisabled = computed(
+      () =>
+        authStore.isLoading || !email.value || !password.value || authStore.isBlocked(email.value),
+    );
 
     const onSubmit = async () => {
       if (isLoginDisabled.value) {
-        toast.error('Informe e-mail e senha para continuar.');
+        if (authStore.isBlocked(email.value)) {
+          const remainingTime = authStore.getRemainingBlockTime(email.value);
+          toast.error(`Conta bloqueada. Tente novamente em ${remainingTime} minutos.`);
+        } else {
+          toast.error('Informe e-mail e senha para continuar.');
+        }
         return;
       }
 
-      try {
-        isSubmitting.value = true;
+      const success = await authStore.login(email.value, password.value);
 
-        const response = await api.post('/auth/login', {
-          email: email.value,
-          password: password.value,
-        });
-
-        toast.success(response.data?.message || 'Login realizado com sucesso!');
-      } catch (error) {
-        const message =
-          (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-          'Não foi possível realizar o login.';
-        toast.error(message);
-      } finally {
-        isSubmitting.value = false;
+      if (success) {
+        authStore.regenerateSessionId();
+        const redirect = router.currentRoute.value.query.redirect as string;
+        await router.push(redirect || '/dashboard');
       }
     };
 
@@ -116,7 +116,7 @@ export default defineComponent({
       email,
       password,
       onSubmit,
-      isSubmitting,
+      isSubmitting: computed(() => authStore.isLoading),
       isLoginDisabled,
     };
   },
@@ -145,7 +145,6 @@ export default defineComponent({
   overflow: hidden;
 }
 
-/* Seção da Imagem (Esquerda) */
 .image-section {
   flex: 1;
   background: linear-gradient(135deg, #0582a6 0%, #2ebac6 100%);
@@ -182,7 +181,6 @@ export default defineComponent({
   font-weight: 300;
 }
 
-/* Elementos Decorativos */
 .decorative-elements {
   position: absolute;
   top: 0;
@@ -223,7 +221,6 @@ export default defineComponent({
   animation-delay: 4s;
 }
 
-/* Seção do Formulário (Direita) */
 .form-section {
   flex: 1;
   display: flex;
@@ -266,7 +263,6 @@ export default defineComponent({
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Estilos da seção de cadastro */
 .signup-text {
   font-size: 18px;
   font-weight: 600;
@@ -296,7 +292,6 @@ export default defineComponent({
   background-color: rgba(5, 130, 166, 0.1);
 }
 
-/* Estilos dos Campos de Input */
 .large-input {
   width: 100%;
   display: block;
@@ -335,7 +330,6 @@ export default defineComponent({
   padding-left: 16px;
 }
 
-/* Estilo do Botão Grande */
 .large-btn {
   height: 60px !important;
   font-size: 16px;
@@ -348,7 +342,6 @@ export default defineComponent({
   font-weight: 600;
 }
 
-/* Animações */
 @keyframes float {
   0%,
   100% {
@@ -359,7 +352,6 @@ export default defineComponent({
   }
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .login-layout {
     flex-direction: column;

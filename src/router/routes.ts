@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { requireAuth, requireGuest } from './guards';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -9,16 +10,26 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: 'login',
         component: () => import('pages/LoginPage.vue'),
+        beforeEnter: requireGuest,
       },
       {
         path: 'cadastro',
         name: 'cadastro',
         component: () => import('pages/CadastroPage.vue'),
+        beforeEnter: requireGuest,
       },
+    ],
+  },
+
+  {
+    path: '/dashboard',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
       {
-        path: 'test',
-        name: 'test',
-        component: () => import('pages/TestPage.vue'),
+        path: '',
+        name: 'dashboard',
+        component: () => import('pages/DashboardPage.vue'),
       },
     ],
   },

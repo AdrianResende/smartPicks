@@ -94,6 +94,22 @@
                 >
                 </q-input>
 
+                <q-select
+                  v-model="perfil"
+                  :options="perfilOptions"
+                  outlined
+                  label="Tipo de Usuário"
+                  :rules="[(val) => !!val || 'Campo obrigatório']"
+                  class="full-width q-mb-md"
+                  size="lg"
+                  emit-value
+                  map-options
+                >
+                  <template v-slot:prepend>
+                    <q-icon :name="perfil === 'admin' ? 'admin_panel_settings' : 'person'" />
+                  </template>
+                </q-select>
+
                 <q-btn
                   type="submit"
                   style="background-color: #0582a6"
@@ -126,6 +142,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from 'src/stores/auth';
 import { toast } from 'vue3-toastify';
 import type { QForm } from 'quasar';
 import { api } from 'src/boot/axios';
@@ -133,6 +151,8 @@ import { api } from 'src/boot/axios';
 export default defineComponent({
   name: 'CadastroPage',
   setup() {
+    const router = useRouter();
+    const authStore = useAuthStore();
     const nome = ref('');
     const formRef = ref<QForm | null>(null);
     const email = ref('');
@@ -140,7 +160,13 @@ export default defineComponent({
     const confirmPassword = ref('');
     const cpf = ref('');
     const dataNascimento = ref('');
+    const perfil = ref('usuario');
     const isSubmitting = ref(false);
+
+    const perfilOptions = [
+      { label: 'Usuário Simples', value: 'usuario', icon: 'person' },
+      { label: 'Administrador', value: 'admin', icon: 'admin_panel_settings' },
+    ];
 
     const formatCpf = (value: string) => {
       const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -248,6 +274,7 @@ export default defineComponent({
         confirmPassword.value,
         cpf.value,
         dataNascimento.value,
+        perfil.value,
       ].every((field) => !!field),
     );
 
@@ -263,6 +290,7 @@ export default defineComponent({
       confirmPassword.value = '';
       cpf.value = '';
       dataNascimento.value = '';
+      perfil.value = 'usuario';
     };
 
     const onSubmit = async () => {
@@ -292,6 +320,8 @@ export default defineComponent({
         return;
       }
 
+      const nomeSeguro = authStore.sanitizeInput(nome.value);
+      const emailSeguro = authStore.sanitizeInput(email.value);
       const cpfFormatado = formatCpf(cpf.value);
       const dataNascimentoISO = toIsoDate(dataNascimento.value);
 
@@ -304,15 +334,19 @@ export default defineComponent({
         isSubmitting.value = true;
 
         const response = await api.post('/auth/register', {
-          name: nome.value,
-          email: email.value,
+          name: nomeSeguro,
+          email: emailSeguro,
           password: password.value,
           cpf: cpfFormatado,
           birthDate: dataNascimentoISO,
+          perfil: perfil.value,
         });
 
         toast.success(response.data?.message || 'Cadastro realizado com sucesso!');
         resetForm();
+        setTimeout(() => {
+          void router.push('/');
+        }, 1500);
       } catch (error) {
         const message =
           (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
@@ -331,6 +365,8 @@ export default defineComponent({
       confirmPassword,
       cpf,
       dataNascimento,
+      perfil,
+      perfilOptions,
       cpfRules,
       dataNascimentoRules,
       isPasswordMismatch,
