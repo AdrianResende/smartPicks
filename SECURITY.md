@@ -68,31 +68,30 @@ pages/
 └── CadastroPage.vue    # Cadastro com sanitização
 ```
 
-### Backend (`server/`)
+### Backend
 
-```
-index.js                # API com JWT e validação
-.env.example           # Variáveis de ambiente de segurança
-```
+Este frontend está configurado para se conectar com um **backend em Go** rodando na porta 8080.
+
+**Integração de Segurança**: O frontend envia requisições para endpoints seguros do backend Go que implementa:
+
+- Autenticação JWT
+- Hash de senhas
+- Validação de dados
+- Controle de sessões
 
 ## 🔧 Configuração de Segurança
 
-### Variáveis de Ambiente Requeridas (Backend)
+### Frontend → Backend Integration
 
-```env
-# Segurança JWT
-JWT_SECRET=sua-chave-secreta-muito-forte-aqui
-JWT_EXPIRES_IN=24h
+O frontend faz chamadas para:
 
-# Hash de Senhas
-PASSWORD_SALT_ROUNDS=12
-
-# Banco de dados (configurar com usuário restrito)
-DB_HOST=localhost
-DB_USER=smartpicks_user  # Usuário com permissões limitadas
-DB_PASSWORD=senha_forte
-DB_NAME=smartpicks_db
 ```
+POST /api/auth/login    - Autenticação
+POST /api/auth/register - Cadastro
+GET  /api/user/profile  - Dados do usuário
+```
+
+**Configuração no axios**: `http://localhost:8080/api`
 
 ### Configurações de Segurança Aplicadas
 

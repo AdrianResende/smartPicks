@@ -33,7 +33,6 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-
   {
     path: '/:catchAll(.*)*',
     name: 'error',

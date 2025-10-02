@@ -8,7 +8,10 @@ export const requireAuth = async (
 ): Promise<void> => {
   const authStore = useAuthStore();
 
-  await authStore.validateToken();
+  // Só valida o token se ainda não estiver autenticado (evita invalidação logo após login)
+  if (!authStore.isAuthenticated) {
+    await authStore.validateToken();
+  }
 
   if (authStore.isAuthenticated) {
     next();
@@ -27,7 +30,10 @@ export const requireGuest = async (
 ): Promise<void> => {
   const authStore = useAuthStore();
 
-  await authStore.validateToken();
+  // Evita chamada desnecessária se já estiver autenticado
+  if (!authStore.isAuthenticated) {
+    await authStore.validateToken();
+  }
 
   if (authStore.isAuthenticated) {
     next('/dashboard');
