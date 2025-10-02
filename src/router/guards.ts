@@ -42,6 +42,26 @@ export const requireGuest = async (
   }
 };
 
+export const requireAdmin = async (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext,
+): Promise<void> => {
+  const authStore = useAuthStore();
+
+  // Autenticação se ainda não foi feita
+  if (!authStore.isAuthenticated) {
+    await authStore.validateToken();
+  }
+
+  if (authStore.isAuthenticated && authStore.user?.perfil === 'admin') {
+    next();
+  } else {
+    // Pode redirecionar para o dashboard ou uma página de acesso negado
+    next('/acesso-negado');
+  }
+};
+
 export const initializeAuth = async (
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,

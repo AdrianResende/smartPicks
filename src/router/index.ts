@@ -5,20 +5,29 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
+import type { RouterHistory } from 'vue-router'; // <-- só tipo
 import routes from './routes';
 import { initializeAuth } from './guards';
 
+
 export default defineRouter(function (/* { store, ssrContext } */) {
-  const createHistory = process.env.SERVER
-    ? createMemoryHistory
-    : process.env.VUE_ROUTER_MODE === 'history'
-      ? createWebHistory
-      : createWebHashHistory;
+  const mode = process.env.VUE_ROUTER_MODE || 'hash';
+  const base = process.env.VUE_ROUTER_BASE || '/';
+
+  let history: RouterHistory;
+
+  if (mode === 'history') {
+    history = createWebHistory(base);
+  } else if (mode === 'hash') {
+    history = createWebHashHistory(base);
+  } else {
+    history = createMemoryHistory(base); // fallback ou para SSR
+  }
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
-    history: createHistory(process.env.VUE_ROUTER_BASE),
+    history,
   });
 
   Router.beforeEach(initializeAuth);

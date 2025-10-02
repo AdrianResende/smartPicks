@@ -1,5 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { requireAuth, requireGuest } from './guards';
+import { requireAuth, requireGuest, requireAdmin } from './guards';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -17,6 +17,26 @@ const routes: RouteRecordRaw[] = [
         name: 'cadastro',
         component: () => import('pages/CadastroPage.vue'),
         beforeEnter: requireGuest,
+      },
+    ],
+  },
+
+  {
+    path: '/acesso-negado',
+    name: 'access-denied',
+    component: () => import('pages/AcessoNegado.vue'),
+  },
+
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAdmin,
+    children: [
+      {
+        path: '',
+        name: 'admin-dashboard',
+        component: () => import('pages/AdminDashboard.vue'),
       },
     ],
   },
