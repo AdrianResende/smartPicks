@@ -1,8 +1,8 @@
 {
   "name": "smartpicks",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Quasar App",
+  "description": "SmartPicks - Sua plataforma inteligente de escolhas",
+  "productName": "SmartPicks",
   "author": "AdrianResende <92228901+AdrianResende@users.noreply.github.com>",
   "type": "module",
   "private": true,

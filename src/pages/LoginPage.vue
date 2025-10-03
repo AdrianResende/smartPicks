@@ -1,18 +1,8 @@
 <template>
   <div class="login-container flex items-center justify-center">
     <div class="login-layout flex overflow-hidden rounded-borders">
-      <div
-        class="image-section flex flex-1 items-center justify-center relative overflow-hidden q-pr-lg"
-      >
-        <div class="text-center text-white relative" style="z-index: 2">
-          <div class="q-mb-xl">
-            <q-icon name="psychology" size="80px" color="white" />
-            <h2 class="brand-title text-h2 text-weight-bold q-mt-md q-mb-sm">SmartPicks</h2>
-            <p class="text-h6 text-weight-light q-ma-none" style="opacity: 0.9">
-              Sua plataforma inteligente de escolhas
-            </p>
-          </div>
-        </div>
+      <div class="image-section flex flex-1 items-center justify-center">
+        <img src="icons/smart.png" alt="SmartPicks Logo" class="logo-centered" />
       </div>
 
       <div class="separator-container">
@@ -143,14 +133,13 @@ export default defineComponent({
 <style scoped>
 .login-container {
   min-height: 100vh;
+  width: 100%;
   background: linear-gradient(135deg, #2ebac6 0%, #0582a6 100%);
 }
 
 .login-layout {
-  width: 90%;
-  max-width: 1000px;
-  height: 80vh;
-  max-height: 600px;
+  max-width: 900px;
+  height: 500px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -162,6 +151,14 @@ export default defineComponent({
 
 .brand-title {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.logo-centered {
+  width: 80%;
+  max-width: 350px;
+  height: auto;
+  filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.3));
+  object-fit: contain;
 }
 
 .form-container {
@@ -185,17 +182,22 @@ export default defineComponent({
   .login-layout {
     flex-direction: column;
     height: auto;
-    min-height: 80vh;
+    min-height: 500px;
     width: 95%;
   }
 
   .image-section {
-    flex: 0 0 200px;
+    flex: 0 0 150px;
     padding-right: 1rem !important;
   }
 
   .brand-title {
-    font-size: 2rem !important;
+    font-size: 1.8rem !important;
+  }
+
+  .logo-centered {
+    width: 70%;
+    max-width: 250px;
   }
 
   .separator-container {
@@ -206,6 +208,11 @@ export default defineComponent({
 @media (max-width: 480px) {
   .form-title {
     font-size: 1.5rem !important;
+  }
+
+  .logo-centered {
+    width: 60%;
+    max-width: 200px;
   }
 }
 </style>

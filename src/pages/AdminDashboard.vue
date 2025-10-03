@@ -1,6 +1,6 @@
 <template>
-  <q-page class="flex flex-center bg-grey-1">
-    <div class="text-center">
+  <q-page class="admin-dashboard-container">
+    <div class="welcome-section">
       <q-icon name="psychology" size="80px" color="primary" class="q-mb-md" />
       <h4 class="text-h4 text-weight-medium q-mt-none q-mb-sm">
         Bem-vindo ao Admin {{ sanitizedUserName }}!
@@ -53,3 +53,35 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.admin-dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.welcome-section {
+  text-align: center;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  max-width: 500px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard-container {
+    padding: 1rem;
+  }
+
+  .welcome-section {
+    padding: 2rem 1.5rem;
+  }
+}
+</style>

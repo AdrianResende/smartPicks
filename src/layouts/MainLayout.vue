@@ -2,7 +2,9 @@
   <q-layout view="lHh Lpr lFf">
     <q-header v-if="authStore.isAuthenticated" elevated class="bg-white text-dark">
       <q-toolbar>
-        <q-btn flat round dense icon="psychology" to="/dashboard" aria-label="SmartPicks" />
+        <q-btn flat round dense to="/dashboard" aria-label="SmartPicks" class="logo-btn">
+          <img src="icons/LogoSmartPicks.png" alt="SmartPicks Logo" class="logo" />
+        </q-btn>
         <q-toolbar-title>
           <router-link to="/dashboard" class="brand-link">SmartPicks</router-link>
         </q-toolbar-title>
@@ -60,5 +62,15 @@ export default defineComponent({
 }
 .brand-link:hover {
   text-decoration: underline;
+}
+
+.logo-btn {
+  padding: 8px !important;
+}
+
+img.logo {
+  width: 120px; /* padrão desktop */
+  height: auto;
+  object-fit: contain;
 }
 </style>

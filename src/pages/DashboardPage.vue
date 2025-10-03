@@ -1,6 +1,6 @@
 <template>
-  <q-page class="flex flex-center bg-grey-1">
-    <div class="text-center">
+  <q-page class="dashboard-container">
+    <div class="welcome-section">
       <q-icon name="psychology" size="80px" color="primary" class="q-mb-md" />
       <h4 class="text-h4 text-weight-medium q-mt-none q-mb-sm">
         Bem-vindo ao SmartPicks, {{ sanitizedUserName }}!
@@ -53,3 +53,43 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.welcome-section {
+  text-align: center;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  max-width: 500px;
+  width: 100%;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.welcome-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .welcome-section {
+    padding: 2rem 1.5rem;
+  }
+}
+</style>

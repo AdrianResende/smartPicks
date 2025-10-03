@@ -375,7 +375,7 @@ export default defineComponent({
 }
 
 .cadastro-layout {
-  width: 92%;
+  width: 100%;
   max-width: 1100px;
   min-height: 85vh;
   background: rgba(255, 255, 255, 0.95);
@@ -413,7 +413,7 @@ export default defineComponent({
     flex-direction: column;
     height: auto;
     min-height: auto;
-    width: 95%;
+    width: 100%;
   }
 
   .image-section {
