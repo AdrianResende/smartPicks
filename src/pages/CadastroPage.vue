@@ -157,7 +157,10 @@
                   map-options
                 >
                   <template v-slot:prepend>
-                    <q-icon :name="perfil === 'admin' ? 'admin_panel_settings' : 'person'" color="grey-6" />
+                    <q-icon
+                      :name="perfil === 'admin' ? 'admin_panel_settings' : 'person'"
+                      color="grey-6"
+                    />
                   </template>
                 </q-select>
               </div>
@@ -185,12 +188,7 @@
 
               <div class="login-link">
                 <span class="login-text">Já tem uma conta? </span>
-                <router-link
-                  to="/"
-                  class="login-btn-link"
-                >
-                  Faça login aqui
-                </router-link>
+                <router-link to="/" class="login-btn-link"> Faça login aqui </router-link>
               </div>
             </q-form>
           </q-card-section>
@@ -391,6 +389,7 @@ export default defineComponent({
       try {
         isSubmitting.value = true;
 
+        // O método register já exibe a mensagem de erro do backend via toast
         const success = await authStore.register({
           nome: nomeSeguro,
           email: emailSeguro,
@@ -406,6 +405,7 @@ export default defineComponent({
             void router.push('/');
           }, 1500);
         }
+        // Não precisamos de else aqui pois a mensagem de erro já é exibida na store
       } finally {
         isSubmitting.value = false;
       }
@@ -487,7 +487,7 @@ export default defineComponent({
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  box-shadow: 
+  box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.1),
     0 8px 32px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -630,7 +630,8 @@ export default defineComponent({
 
 /* Animações */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {

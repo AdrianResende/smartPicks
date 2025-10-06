@@ -10,6 +10,7 @@ interface User {
   perfil: 'user' | 'admin';
   cpf?: string;
   data_nascimento?: string;
+  avatar?: string; // URL do avatar
 }
 
 interface LoginAttempt {
@@ -205,9 +206,11 @@ export const useAuthStore = defineStore('auth', () => {
       // Registrar tentativa falhada
       registerFailedAttempt(sanitizedEmail);
 
-      const message =
-        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        'Não foi possível realizar o login.';
+      // Extrair mensagem específica do backend
+      const errorResponse = (error as { response?: { data?: { message?: string } } })?.response;
+      const backendMessage = errorResponse?.data?.message;
+
+      const message = backendMessage || 'Não foi possível realizar o login.';
       toast.error(message);
       return false;
     } finally {
@@ -251,6 +254,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  // Helper: converte arquivo para base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+    });
+  };
+
   // Helper: extrai mensagens de erro do backend
   const extractErrorMessages = (err: unknown): string[] => {
     const messages: string[] = [];
@@ -259,13 +272,13 @@ export const useAuthStore = defineStore('auth', () => {
     const data = resp?.data as
       | string
       | {
-          message?: string;
-          error?: string;
-          errors?: unknown;
-          detail?: string | string[];
-          details?: unknown;
-          violations?: unknown;
-        }
+        message?: string;
+        error?: string;
+        errors?: unknown;
+        detail?: string | string[];
+        details?: unknown;
+        violations?: unknown;
+      }
       | undefined;
 
     const push = (m?: unknown, prefix?: string): void => {
@@ -391,6 +404,81 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  // Métodos para gerenciar avatar
+  const uploadAvatar = async (file: File): Promise<boolean> => {
+    try {
+      isLoading.value = true;
+
+      if (!user.value?.id) {
+        throw new Error('Usuário não autenticado');
+      }
+
+      const base64 = await fileToBase64(file);
+
+      const response = await api.post('/users/avatar', {
+        user_id: user.value.id,
+        avatar: base64
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.data?.avatar && user.value) {
+        user.value.avatar = response.data.avatar;
+        localStorage.setItem('smartpicks_user', JSON.stringify(user.value));
+        toast.success('Avatar atualizado com sucesso!');
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao fazer upload do avatar';
+      toast.error(message);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const removeAvatar = async (): Promise<boolean> => {
+    try {
+      isLoading.value = true;
+
+      if (!user.value?.id) {
+        throw new Error('Usuário não autenticado');
+      }
+
+      await api.delete('/users/avatar', {
+        data: {
+          user_id: user.value.id
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (user.value) {
+        delete user.value.avatar;
+        localStorage.setItem('smartpicks_user', JSON.stringify(user.value));
+        toast.success('Avatar removido com sucesso!');
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao remover avatar';
+      toast.error(message);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     user,
     token,
@@ -409,5 +497,7 @@ export const useAuthStore = defineStore('auth', () => {
     checkUserPermissions,
     getUsersByProfile,
     checkTableStatus,
+    uploadAvatar,
+    removeAvatar,
   };
 });

@@ -128,6 +128,7 @@ export default defineComponent({
         return;
       }
 
+      // O método login já exibe a mensagem de erro do backend via toast
       const success = await authStore.login(email.value, password.value);
 
       if (success) {
@@ -144,6 +145,7 @@ export default defineComponent({
           await router.replace({ name: 'dashboard' }).catch(() => {});
         }
       }
+      // Não precisamos de else aqui pois a mensagem de erro já é exibida na store
     };
 
     return {
