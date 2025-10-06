@@ -63,3 +63,8 @@ div,
 .q-page {
   min-height: 100vh;
 }
+
+/* Evita fundo cinza padrão do Quasar por trás das páginas */
+.q-page-container {
+  background: transparent !important;
+}
