@@ -75,7 +75,7 @@ export const validatePasswordStrength = (
     score += 1;
   }
 
-  const isValid = score >= 3; // Pelo menos 3 critérios atendidos
+  const isValid = score >= 3;
 
   return {
     isValid,
@@ -84,17 +84,13 @@ export const validatePasswordStrength = (
   };
 };
 
-/**
- * Limita tamanho de input para prevenir ataques de negação de serviço
- */
+
 export const limitInputSize = (input: string, maxLength: number = 1000): string => {
   if (!input) return '';
   return input.slice(0, maxLength);
 };
 
-/**
- * Remove caracteres de controle que podem ser perigosos
- */
+
 export const removeControlCharacters = (input: string): string => {
   if (!input) return '';
   // Remove caracteres de controle exceto \n, \r, \t
@@ -102,9 +98,6 @@ export const removeControlCharacters = (input: string): string => {
   return input.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
 };
 
-/**
- * Sanitização completa para inputs de usuário
- */
 export const sanitizeUserInput = (input: string, maxLength: number = 1000): string => {
   if (!input) return '';
 

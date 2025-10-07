@@ -5,7 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-import type { RouterHistory } from 'vue-router'; // <-- só tipo
+import type { RouterHistory } from 'vue-router';
 import routes from './routes';
 import { initializeAuth } from './guards';
 
@@ -21,7 +21,7 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   } else if (mode === 'hash') {
     history = createWebHashHistory(base);
   } else {
-    history = createMemoryHistory(base); // fallback ou para SSR
+    history = createMemoryHistory(base);
   }
 
   const Router = createRouter({

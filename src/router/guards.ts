@@ -8,7 +8,6 @@ export const requireAuth = async (
 ): Promise<void> => {
   const authStore = useAuthStore();
 
-  // Só valida o token se ainda não estiver autenticado (evita invalidação logo após login)
   if (!authStore.isAuthenticated) {
     await authStore.validateToken();
   }
@@ -30,7 +29,6 @@ export const requireGuest = async (
 ): Promise<void> => {
   const authStore = useAuthStore();
 
-  // Evita chamada desnecessária se já estiver autenticado
   if (!authStore.isAuthenticated) {
     await authStore.validateToken();
   }
@@ -49,7 +47,6 @@ export const requireAdmin = async (
 ): Promise<void> => {
   const authStore = useAuthStore();
 
-  // Autenticação se ainda não foi feita
   if (!authStore.isAuthenticated) {
     await authStore.validateToken();
   }
@@ -57,7 +54,6 @@ export const requireAdmin = async (
   if (authStore.isAuthenticated && authStore.user?.perfil === 'admin') {
     next();
   } else {
-    // Pode redirecionar para o dashboard ou uma página de acesso negado
     next('/acesso-negado');
   }
 };
