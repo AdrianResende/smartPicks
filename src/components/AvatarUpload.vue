@@ -1,6 +1,5 @@
 <template>
   <div class="avatar-upload">
-    <!-- Avatar Display -->
     <q-avatar
       :size="size"
       :color="user?.avatar ? 'transparent' : 'primary'"
@@ -10,27 +9,19 @@
     >
       <img v-if="user?.avatar" :src="user.avatar" alt="Avatar do usuário" />
       <q-icon v-else name="person" :size="iconSize" />
-
-      <!-- Overlay de hover -->
       <div class="avatar-overlay">
         <q-icon name="camera_alt" size="sm" />
       </div>
     </q-avatar>
-
-    <!-- Dialog para upload -->
     <q-dialog v-model="showUploadDialog" persistent>
       <q-card class="avatar-dialog">
         <q-card-section class="text-center">
           <div class="text-h6 q-mb-md">Atualizar Avatar</div>
-
-          <!-- Preview -->
           <q-avatar size="120px" class="q-mb-md">
             <img v-if="previewUrl" :src="previewUrl" alt="Preview" />
             <img v-else-if="user?.avatar" :src="user.avatar" alt="Avatar atual" />
             <q-icon v-else name="person" size="60px" color="grey-5" />
           </q-avatar>
-
-          <!-- Input de arquivo -->
           <q-file
             v-model="selectedFile"
             outlined
@@ -107,21 +98,16 @@ const iconSize = computed(() => {
 
 const onFileSelected = (file: File | null) => {
   if (file) {
-    // Validar tipo de arquivo
     if (!file.type.startsWith('image/')) {
       selectedFile.value = null;
       previewUrl.value = null;
       return;
     }
-
-    // Validar tamanho do arquivo (2MB)
     if (file.size > 2 * 1024 * 1024) {
       selectedFile.value = null;
       previewUrl.value = null;
       return;
     }
-
-    // Criar preview
     const reader = new FileReader();
     reader.onload = (e) => {
       previewUrl.value = e.target?.result as string;

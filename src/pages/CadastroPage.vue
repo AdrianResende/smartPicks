@@ -1,14 +1,11 @@
 <template>
   <q-page class="cadastro-page">
     <div class="cadastro-wrapper">
-      <!-- Seção da Logo -->
       <div class="logo-section">
         <div class="logo-container">
           <img src="icons/smart.png" alt="SmartPicks Logo" class="main-logo" />
         </div>
       </div>
-
-      <!-- Card de Cadastro -->
       <div class="cadastro-card-wrapper">
         <q-card class="cadastro-card" flat>
           <q-card-section class="card-header">
@@ -195,13 +192,6 @@
         </q-card>
       </div>
     </div>
-
-    <!-- Elementos decorativos -->
-    <div class="decoration-circles">
-      <div class="circle circle-1"></div>
-      <div class="circle circle-2"></div>
-      <div class="circle circle-3"></div>
-    </div>
   </q-page>
 </template>
 
@@ -378,7 +368,7 @@ export default defineComponent({
 
       const nomeSeguro = authStore.sanitizeInput(nome.value);
       const emailSeguro = authStore.sanitizeInput(email.value);
-      const cpfLimpo = cpf.value.replace(/\D/g, ''); // Apenas números
+      const cpfLimpo = cpf.value.replace(/\D/g, '');
       const dataNascimentoISO = toIsoDate(dataNascimento.value);
 
       if (!dataNascimentoISO) {
@@ -389,7 +379,6 @@ export default defineComponent({
       try {
         isSubmitting.value = true;
 
-        // O método register já exibe a mensagem de erro do backend via toast
         const success = await authStore.register({
           nome: nomeSeguro,
           email: emailSeguro,
@@ -405,7 +394,6 @@ export default defineComponent({
             void router.push('/');
           }, 1500);
         }
-        // Não precisamos de else aqui pois a mensagem de erro já é exibida na store
       } finally {
         isSubmitting.value = false;
       }
@@ -584,59 +572,6 @@ export default defineComponent({
 .login-btn-link:hover {
   color: #0582a6;
   text-decoration: underline;
-}
-
-/* Elementos decorativos */
-.decoration-circles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.circle {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.circle-1 {
-  width: 200px;
-  height: 200px;
-  top: 10%;
-  right: 10%;
-  animation: float 8s ease-in-out infinite;
-}
-
-.circle-2 {
-  width: 120px;
-  height: 120px;
-  bottom: 20%;
-  left: 15%;
-  animation: float 6s ease-in-out infinite reverse;
-}
-
-.circle-3 {
-  width: 80px;
-  height: 80px;
-  top: 60%;
-  right: 20%;
-  animation: float 10s ease-in-out infinite;
-}
-
-/* Animações */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
 }
 
 /* Responsividade */

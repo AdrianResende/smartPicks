@@ -10,7 +10,7 @@ interface User {
   perfil: 'user' | 'admin';
   cpf?: string;
   data_nascimento?: string;
-  avatar?: string; // URL do avatar
+  avatar?: string;
 }
 
 interface LoginAttempt {
@@ -21,23 +21,21 @@ interface LoginAttempt {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  // Estado
+
   const user = ref<User | null>(null);
   const token = ref<string | null>(null);
   const isLoading = ref(false);
   const loginAttempts = ref<Map<string, LoginAttempt>>(new Map());
 
-  // Configurações de segurança
   const MAX_LOGIN_ATTEMPTS = 5;
   const BLOCK_DURATION_MINUTES = 15;
 
-  // Computed
   const isAuthenticated = computed(() => !!user.value);
   const isAdmin = computed(() => user.value?.perfil === 'admin');
 
-  // Métodos de controle de tentativas de login
+
   const getClientFingerprint = (): string => {
-    // Simples identificação baseada em IP/sessão (em produção use biblioteca mais robusta)
+
     return `${navigator.userAgent}-${window.location.host}`;
   };
 
@@ -47,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     if (!attempt) return false;
 
-    // Remove bloqueio expirado
+
     if (attempt.blockedUntil) {
       if (new Date() < attempt.blockedUntil) return true;
       loginAttempts.value.delete(fingerprint);
@@ -96,7 +94,6 @@ export const useAuthStore = defineStore('auth', () => {
     return Math.max(0, Math.ceil(remaining / 1000 / 60)); // minutos
   };
 
-  // Sanitização de dados
   const sanitizeInput = (input: string): string => {
     if (!input) return '';
 
@@ -114,7 +111,6 @@ export const useAuthStore = defineStore('auth', () => {
       .trim();
   };
 
-  // Validação de token
   const validateToken = async (): Promise<boolean> => {
     const storedToken = localStorage.getItem('smartpicks_token');
     const storedUser = localStorage.getItem('smartpicks_user');
@@ -197,16 +193,14 @@ export const useAuthStore = defineStore('auth', () => {
             }
           }
         } catch {
-          // Ignorar, será tratado abaixo
+          // Ignorar erros ao buscar permissões
         }
       }
 
       return false;
     } catch (error) {
-      // Registrar tentativa falhada
       registerFailedAttempt(sanitizedEmail);
 
-      // Extrair mensagem específica do backend
       const errorResponse = (error as { response?: { data?: { message?: string } } })?.response;
       const backendMessage = errorResponse?.data?.message;
 
@@ -218,33 +212,25 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Logout
   const logout = async (): Promise<void> => {
     try {
-      // Notificar o backend sobre o logout (opcional)
       if (token.value) {
         await api.post('/auth/logout').catch(() => {
-          // Ignorar erros de logout no backend
         });
       }
     } finally {
-      // Limpar estado local
       user.value = null;
       token.value = null;
 
-      // Limpar localStorage
       localStorage.removeItem('smartpicks_token');
       localStorage.removeItem('smartpicks_user');
       localStorage.removeItem('smartpicks_last_login_email');
-
-      // Remover header de autorização
       delete api.defaults.headers.common['Authorization'];
 
       toast.info('Logout realizado com sucesso!');
     }
   };
 
-  // Inicialização
   const initialize = async (): Promise<void> => {
     try {
       await validateToken();
@@ -254,7 +240,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Helper: converte arquivo para base64
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -264,7 +249,6 @@ export const useAuthStore = defineStore('auth', () => {
     });
   };
 
-  // Helper: extrai mensagens de erro do backend
   const extractErrorMessages = (err: unknown): string[] => {
     const messages: string[] = [];
     const resp = (err as { response?: { data?: unknown; status?: number; statusText?: string } })
@@ -323,7 +307,6 @@ export const useAuthStore = defineStore('auth', () => {
     return [...new Set(messages.filter((m) => m?.trim()))];
   };
 
-  // Cadastro
   const register = async (userData: {
     nome: string;
     email: string;
@@ -403,8 +386,6 @@ export const useAuthStore = defineStore('auth', () => {
       return null;
     }
   };
-
-  // Métodos para gerenciar avatar
   const uploadAvatar = async (file: File): Promise<boolean> => {
     try {
       isLoading.value = true;
