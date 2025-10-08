@@ -7,7 +7,7 @@ import {
 } from 'vue-router';
 import type { RouterHistory } from 'vue-router';
 import routes from './routes';
-import { initializeAuth } from './guards';
+import { initializeAuth, validateUrl } from './guards';
 
 
 export default defineRouter(function (/* { store, ssrContext } */) {
@@ -30,6 +30,7 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history,
   });
 
+  Router.beforeEach(validateUrl);
   Router.beforeEach(initializeAuth);
 
   return Router;

@@ -58,6 +58,33 @@ export const requireAdmin = async (
   }
 };
 
+export const validateUrl = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext,
+): void => {
+  // Lista de rotas válidas
+  const validPaths = [
+    '/',
+    '/cadastro',
+    '/dashboard',
+    '/admin',
+    '/acesso-negado'
+  ];
+
+  // Verificar se a rota de destino é válida
+  const isValidPath = validPaths.includes(to.path) || to.matched.length > 0;
+
+  if (!isValidPath) {
+    // Redirecionar para a página inicial se a rota não for válida
+    console.warn(`Tentativa de acesso a rota inválida: ${to.path}`);
+    next('/');
+    return;
+  }
+
+  next();
+};
+
 export const initializeAuth = async (
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
