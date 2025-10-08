@@ -1,8 +1,22 @@
 // Importar fonte Inter do Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-// Definir fonte Inter globalmente
-* {
+// Definir fonte Inter para elementos de texto
+body,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+div,
+button,
+input,
+select,
+textarea,
+label {
   font-family:
     'Inter',
     -apple-system,
@@ -10,6 +24,13 @@
     'Segoe UI',
     Roboto,
     sans-serif !important;
+}
+
+// Garantir que os ícones do Material Icons usem a fonte correta
+.material-icons,
+.q-icon,
+[class*='material-icons'] {
+  font-family: 'Material Icons' !important;
 }
 
 .text-center {

@@ -12,7 +12,7 @@ export default defineConfig((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['axios', 'toastify'],
+    boot: ['icons', 'axios', 'toastify'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -60,7 +60,12 @@ export default defineConfig((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      extendViteConf(viteConf) {
+        // Configurar o Vite para servir assets corretamente
+        viteConf.server = viteConf.server || {};
+        viteConf.server.fs = viteConf.server.fs || {};
+        viteConf.server.fs.allow = ['..', '.'];
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
@@ -103,10 +108,8 @@ export default defineConfig((ctx) => {
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
     framework: {
+      iconSet: 'material-icons', // Define o conjunto de ícones
       config: {},
-
-      // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
