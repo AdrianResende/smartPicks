@@ -1,0 +1,198 @@
+<template>
+  <q-layout view="lHh Lpr lFf">
+    <q-header v-if="authStore.isAuthenticated" elevated class="bg-white text-dark" height="80">
+      <q-toolbar class="q-px-lg">
+        <div class="row items-center q-py-sm">
+          <img src="icons/smartLogo.png" alt="SmartPicks Logo" class="header-logo" />
+          <img
+            src="icons/smartName.png"
+            alt="SmartPicks Name"
+            class="header-logo"
+            style="margin-left: -4.5rem"
+          />
+        </div>
+
+        <q-space />
+        <div class="row items-center no-wrap q-gutter-md">
+          <AvatarUpload :size="$q.screen.xs ? '36px' : '42px'" />
+
+          <div class="column items-start q-ml-sm gt-xs">
+            <span class="text-body2 text-grey-7">Bem-vindo,</span>
+            <span class="text-body1 text-weight-medium">{{ userName }}</span>
+          </div>
+
+          <q-btn
+            rounded
+            color="primary"
+            icon="add"
+            :label="$q.screen.gt.sm ? 'Novo Palpite' : ''"
+            no-caps
+          >
+            <q-tooltip v-if="!$q.screen.gt.sm">Novo Palpite</q-tooltip>
+          </q-btn>
+
+          <q-btn
+            rounded
+            outline
+            color="negative"
+            icon="logout"
+            :label="$q.screen.gt.md ? 'Sair' : ''"
+            :loading="loggingOut"
+            @click="onLogout"
+            no-caps
+          >
+            <q-tooltip v-if="!$q.screen.gt.md">Fazer logout</q-tooltip>
+          </q-btn>
+        </div>
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from 'src/stores/auth';
+import { useQuasar } from 'quasar';
+import AvatarUpload from 'src/components/AvatarUpload.vue';
+
+const router = useRouter();
+const authStore = useAuthStore();
+const $q = useQuasar();
+
+const loggingOut = ref(false);
+
+const userName = computed(() => authStore.user?.nome || 'Usuário');
+
+const onLogout = async () => {
+  if (loggingOut.value) return; // Evita cliques múltiplos
+
+  loggingOut.value = true;
+
+  // Timeout de segurança para garantir que o loading não fica infinito
+  const timeoutId = setTimeout(() => {
+    try {
+      if ($q?.loading?.hide) $q.loading.hide();
+    } catch (e) {
+      console.warn('Erro ao esconder loading:', e);
+    }
+    loggingOut.value = false;
+    try {
+      if ($q?.notify) {
+        $q.notify({
+          type: 'warning',
+          message: 'Logout demorou mais que o esperado, redirecionando...',
+          position: 'top',
+        });
+      }
+    } catch (e) {
+      console.warn('Erro ao mostrar notificação:', e);
+    }
+    router.push('/').catch(() => {});
+  }, 8000); // 8 segundos
+
+  try {
+    // Tenta mostrar loading, mas não falha se não conseguir
+    try {
+      if ($q?.loading?.show) {
+        $q.loading.show({
+          message: 'Fazendo logout...',
+          delay: 300,
+        });
+      }
+    } catch (e) {
+      console.warn('Erro ao mostrar loading:', e);
+    }
+
+    await authStore.logout();
+
+    // Limpa o timeout se chegou até aqui
+    clearTimeout(timeoutId);
+
+    try {
+      if ($q?.notify) {
+        $q.notify({
+          type: 'positive',
+          message: 'Logout realizado com sucesso!',
+          position: 'top',
+        });
+      }
+    } catch (e) {
+      console.warn('Erro ao mostrar notificação de sucesso:', e);
+    }
+
+    // Redireciona para a raiz (login)
+    await router.push('/').catch(() => {});
+  } catch (error) {
+    clearTimeout(timeoutId);
+    console.error('Erro ao fazer logout:', error);
+
+    // Mesmo com erro, sempre redireciona (pois a limpeza local foi feita)
+    try {
+      if ($q?.notify) {
+        $q.notify({
+          type: 'info',
+          message: 'Logout realizado localmente.',
+          position: 'top',
+        });
+      }
+    } catch (e) {
+      console.warn('Erro ao mostrar notificação de erro:', e);
+    }
+
+    await router.push('/').catch(() => {});
+  } finally {
+    try {
+      if ($q?.loading?.hide) $q.loading.hide();
+    } catch (e) {
+      console.warn('Erro ao esconder loading no finally:', e);
+    }
+    loggingOut.value = false;
+  }
+};
+</script>
+
+<style scoped>
+.header-logo {
+  width: 180px;
+  height: 60px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 1024px) {
+  .header-logo {
+    width: 150px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-logo {
+    width: 120px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-logo {
+    width: 100px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-logo {
+    width: 80px;
+    height: 30px;
+  }
+}
+</style>
