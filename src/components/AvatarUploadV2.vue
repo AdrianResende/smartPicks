@@ -5,6 +5,7 @@
       :color="user?.avatar ? 'transparent' : 'primary'"
       :text-color="user?.avatar ? 'transparent' : 'white'"
       class="avatar-container"
+      :class="{ loading: isProcessing }"
       @click="openUploadDialog"
     >
       <img v-if="user?.avatar" :src="user.avatar" alt="Avatar do usuário" class="avatar-image" />
@@ -45,9 +46,19 @@
               icon="close"
               class="remove-preview-btn"
               @click="clearPreview"
-              :disable="uploading || removing"
+              :disable="isProcessing"
             />
           </div>
+
+          <!-- Progress bar durante upload -->
+          <q-linear-progress
+            v-if="isUploading && uploadProgress > 0"
+            :value="uploadProgress / 100"
+            color="primary"
+            size="8px"
+            rounded
+            class="q-mb-md"
+          />
 
           <q-file
             v-model="selectedFile"
@@ -61,6 +72,7 @@
             class="q-mb-md full-width"
             :error="!!fileError"
             :error-message="fileError"
+            :disable="isProcessing"
           >
             <template v-slot:prepend>
               <q-icon name="image" color="primary" />
@@ -89,7 +101,7 @@
             flat
             label="Cancelar"
             @click="closeDialog"
-            :disable="uploading || removing"
+            :disable="isProcessing"
             class="q-px-lg"
           />
 
@@ -99,9 +111,9 @@
             color="negative"
             label="Remover Avatar"
             icon="delete"
-            @click="removeAvatar"
-            :loading="removing"
-            :disable="uploading"
+            @click="handleRemoveAvatar"
+            :loading="isRemoving"
+            :disable="isUploading"
             class="q-px-lg"
           />
 
@@ -111,14 +123,14 @@
             color="primary"
             :label="user?.avatar ? 'Atualizar' : 'Salvar'"
             icon="save"
-            @click="uploadAvatar"
-            :loading="uploading"
+            @click="handleUploadAvatar"
+            :loading="isUploading"
             :disable="!canSave"
             class="q-px-lg"
           />
         </q-card-actions>
 
-        <q-inner-loading :showing="uploading || removing">
+        <q-inner-loading :showing="isProcessing">
           <q-spinner-dots size="50px" color="primary" />
         </q-inner-loading>
       </q-card>
@@ -128,8 +140,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useQuasar } from 'quasar';
-import { useAuthStore } from 'src/stores/auth';
+import { useAvatar } from 'src/composables/useAvatar';
 
 interface Props {
   size?: string;
@@ -141,28 +152,35 @@ const props = withDefaults(defineProps<Props>(), {
   editable: true,
 });
 
-// Composables
-const $q = useQuasar();
-const authStore = useAuthStore();
+// Usar o composable personalizado
+const {
+  user,
+  isUploading,
+  isRemoving,
+  isProcessing,
+  uploadProgress,
+  validateFile,
+  createImagePreview,
+  uploadAvatar,
+  confirmRemoveAvatar,
+} = useAvatar({
+  maxSize: 5 * 1024 * 1024, // 5MB
+  allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+});
 
-// Estado reativo
+// Estado local do componente
 const showUploadDialog = ref(false);
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string | null>(null);
-const uploading = ref(false);
-const removing = ref(false);
 const fileError = ref<string>('');
 
 // Computed properties
-const user = computed(() => authStore.user);
 const iconSize = computed(() => {
   const size = parseInt(props.size);
   return size > 60 ? 'lg' : size > 40 ? 'md' : 'sm';
 });
 
-const canSave = computed(
-  () => selectedFile.value && !uploading.value && !removing.value && !fileError.value,
-);
+const canSave = computed(() => selectedFile.value && !isProcessing.value && !fileError.value);
 
 // Métodos
 const openUploadDialog = () => {
@@ -177,40 +195,11 @@ const clearPreview = () => {
   fileError.value = '';
 };
 
-const onFileRejected = (rejectedEntries: Array<{ failedPropValidation: string }>) => {
-  const rejection = rejectedEntries[0];
-  if (rejection && rejection.failedPropValidation === 'max-file-size') {
-    fileError.value = 'Arquivo muito grande. Máximo permitido: 5MB';
-  } else if (rejection && rejection.failedPropValidation === 'accept') {
-    fileError.value = 'Formato não suportado. Use JPG, PNG, GIF ou WebP';
-  } else {
-    fileError.value = 'Erro ao selecionar arquivo';
-  }
-
-  $q.notify({
-    type: 'negative',
-    message: fileError.value,
-    position: 'top',
-    timeout: 3000,
-  });
+const onFileRejected = () => {
+  fileError.value = 'Arquivo rejeitado. Verifique o formato e tamanho.';
 };
 
-const validateImageFile = (file: File): string | null => {
-  // Validar tipo
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-  if (!allowedTypes.includes(file.type)) {
-    return 'Formato não suportado. Use JPG, PNG, GIF ou WebP';
-  }
-
-  // Validar tamanho (5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    return 'Arquivo muito grande. Máximo permitido: 5MB';
-  }
-
-  return null;
-};
-
-const onFileSelected = (file: File | null) => {
+const onFileSelected = async (file: File | null) => {
   fileError.value = '';
 
   if (!file) {
@@ -218,8 +207,8 @@ const onFileSelected = (file: File | null) => {
     return;
   }
 
-  // Validar arquivo
-  const validationError = validateImageFile(file);
+  // Validar arquivo usando o composable
+  const validationError = await validateFile(file);
   if (validationError) {
     fileError.value = validationError;
     selectedFile.value = null;
@@ -228,91 +217,28 @@ const onFileSelected = (file: File | null) => {
   }
 
   // Criar preview da imagem
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    previewUrl.value = e.target?.result as string;
-  };
-  reader.onerror = () => {
-    fileError.value = 'Erro ao ler o arquivo';
+  try {
+    previewUrl.value = await createImagePreview(file);
+  } catch {
+    fileError.value = 'Erro ao processar a imagem';
     selectedFile.value = null;
     previewUrl.value = null;
-  };
-  reader.readAsDataURL(file);
-};
-
-const uploadAvatar = async () => {
-  if (!selectedFile.value || !canSave.value) return;
-
-  uploading.value = true;
-  try {
-    const success = await authStore.uploadAvatar(selectedFile.value);
-    if (success) {
-      $q.notify({
-        type: 'positive',
-        message: user.value?.avatar
-          ? 'Avatar atualizado com sucesso!'
-          : 'Avatar adicionado com sucesso!',
-        position: 'top',
-        timeout: 3000,
-        icon: 'check_circle',
-      });
-      closeDialog();
-    } else {
-      $q.notify({
-        type: 'negative',
-        message: 'Erro ao salvar avatar. Tente novamente.',
-        position: 'top',
-        timeout: 3000,
-        icon: 'error',
-      });
-    }
-  } catch (error) {
-    console.error('Erro ao fazer upload do avatar:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Erro inesperado. Tente novamente.',
-      position: 'top',
-      timeout: 3000,
-      icon: 'error',
-    });
-  } finally {
-    uploading.value = false;
   }
 };
 
-const removeAvatar = async () => {
-  removing.value = true;
-  try {
-    const success = await authStore.removeAvatar();
-    if (success) {
-      $q.notify({
-        type: 'positive',
-        message: 'Avatar removido com sucesso!',
-        position: 'top',
-        timeout: 3000,
-        icon: 'check_circle',
-      });
-      closeDialog();
-    } else {
-      $q.notify({
-        type: 'negative',
-        message: 'Erro ao remover avatar. Tente novamente.',
-        position: 'top',
-        timeout: 3000,
-        icon: 'error',
-      });
-    }
-  } catch (error) {
-    console.error('Erro ao remover avatar:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Erro inesperado. Tente novamente.',
-      position: 'top',
-      timeout: 3000,
-      icon: 'error',
-    });
-  } finally {
-    removing.value = false;
+const handleUploadAvatar = async () => {
+  if (!selectedFile.value || !canSave.value) return;
+
+  const success = await uploadAvatar(selectedFile.value);
+  if (success) {
+    closeDialog();
+  }
+};
+
+const handleRemoveAvatar = async () => {
+  const success = await confirmRemoveAvatar();
+  if (success) {
+    closeDialog();
   }
 };
 
@@ -401,12 +327,7 @@ const closeDialog = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Animações personalizadas */
-.avatar-upload {
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Responsividade aprimorada */
+/* Responsividade */
 @media (max-width: 600px) {
   .avatar-dialog {
     min-width: 90vw;
@@ -433,33 +354,22 @@ const closeDialog = () => {
   }
 }
 
-/* Melhorias de acessibilidade */
+/* Estados especiais */
 .avatar-container:focus-visible {
   outline: 2px solid var(--q-primary);
   outline-offset: 2px;
 }
 
-/* Estilo para loading states */
 .avatar-container.loading {
   pointer-events: none;
   opacity: 0.6;
 }
 
-/* Estilo para estados de erro */
-.file-error {
-  animation: shake 0.5s ease-in-out;
+.q-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  75% {
-    transform: translateX(4px);
-  }
+.q-btn:hover {
+  transform: translateY(-1px);
 }
 </style>

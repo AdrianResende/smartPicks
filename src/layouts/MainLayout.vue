@@ -10,23 +10,38 @@
         class="row items-center justify-between q-px-md"
         style="height: 80px; min-height: 80px"
       >
-        <!-- Lado esquerdo: Logos -->
         <div class="row items-center q-gutter-md">
           <img src="icons/LogoSmart.png" alt="SmartPicks Logo" class="header-logo" />
-          <img src="icons/NameSmart.png" alt="SmartPicks Logo" class="header-logo" />
+          <img
+            src="icons/NameSmart.png"
+            alt="SmartPicks Logo"
+            class="header-logo"
+            style="margin-left: -4.5em"
+          />
         </div>
 
-        <!-- Lado direito: Usuário e ações -->
         <div class="row items-center no-wrap q-gutter-sm">
-          <!-- Avatar do usuário -->
           <AvatarUpload size="40px" />
 
-          <span class="text-body1 text-weight-medium q-mx-md ellipsis">Olá, {{ userName }}!</span>
-
-          <q-btn class="q-mx-md" rounded color="primary" label="Novo Palpite" no-caps />
+          <span class="text-body1 text-weight-medium q-mx-md ellipsis gt-xs">
+            Olá, {{ userName }}!
+          </span>
 
           <q-btn
-            class="q-mx-md"
+            class="q-mx-md gt-sm"
+            rounded
+            color="primary"
+            label="Novo Palpite"
+            no-caps
+            unelevated
+          />
+
+          <q-btn class="lt-md" flat round color="primary" icon="add" size="md">
+            <q-tooltip>Novo Palpite</q-tooltip>
+          </q-btn>
+
+          <q-btn
+            class="q-mx-md gt-xs"
             unelevated
             rounded
             color="negative"
@@ -37,7 +52,20 @@
             @click="onLogout"
             no-caps
           >
-            <q-tooltip anchor="top middle" self="bottom middle"> Fazer logout </q-tooltip>
+            <q-tooltip>Fazer logout</q-tooltip>
+          </q-btn>
+
+          <q-btn
+            class="lt-sm"
+            flat
+            round
+            color="negative"
+            icon="logout"
+            size="md"
+            :loading="loggingOut"
+            @click="onLogout"
+          >
+            <q-tooltip>Sair</q-tooltip>
           </q-btn>
         </div>
       </q-toolbar>
@@ -49,44 +77,34 @@
   </q-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, ref } from 'vue';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
-import AvatarUpload from 'src/components/AvatarUpload.vue';
+import AvatarUpload from 'src/components/AvatarUploadV2.vue';
 
-export default defineComponent({
-  name: 'MainLayout',
-  components: {
-    AvatarUpload,
-  },
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
-    const loggingOut = ref(false);
+// Store e composables
+const router = useRouter();
+const authStore = useAuthStore();
 
-    const userName = computed(() => authStore.user?.nome || 'Usuário');
+// Estado reativo
+const loggingOut = ref(false);
 
-    const onLogout = async () => {
-      loggingOut.value = true;
-      try {
-        await authStore.logout();
-        await router.replace({ name: 'login' }).catch(() => {});
-      } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-      } finally {
-        loggingOut.value = false;
-      }
-    };
+// Computed properties
+const userName = computed(() => authStore.user?.nome || 'Usuário');
 
-    return {
-      authStore,
-      userName,
-      loggingOut,
-      onLogout,
-    };
-  },
-});
+// Métodos
+const onLogout = async () => {
+  loggingOut.value = true;
+  try {
+    await authStore.logout();
+    await router.replace({ name: 'login' }).catch(() => {});
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error);
+  } finally {
+    loggingOut.value = false;
+  }
+};
 </script>
 
 <style scoped>
@@ -101,7 +119,6 @@ export default defineComponent({
   transform: scale(1.05);
 }
 
-/* Apenas estilos que não podem ser substituídos por classes Quasar */
 @media (max-width: 1024px) {
   .header-logo {
     width: 150px;
@@ -128,5 +145,37 @@ export default defineComponent({
     width: 80px;
     height: 30px;
   }
+}
+
+/* Melhorias de responsividade para o header */
+@media (max-width: 768px) {
+  .q-toolbar {
+    padding: 0 8px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .q-toolbar {
+    padding: 0 4px !important;
+  }
+
+  .q-btn {
+    min-width: auto;
+  }
+}
+
+/* Animações suaves */
+.q-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.q-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Estilo para o header */
+.q-header {
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 </style>
