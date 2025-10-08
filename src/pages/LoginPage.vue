@@ -3,7 +3,7 @@
     <div class="login-wrapper">
       <div class="logo-section">
         <div class="logo-container">
-          <img src="icons/smart.png" class="main-logo" />
+          <img src="icons/LogoSmartFull.png" class="main-logo" />
         </div>
       </div>
       <div class="login-card-wrapper">

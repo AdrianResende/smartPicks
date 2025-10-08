@@ -12,8 +12,8 @@
       >
         <!-- Lado esquerdo: Logos -->
         <div class="row items-center q-gutter-md">
-          <img src="icons/header1.png" alt="SmartPicks Logo" class="header-logo" />
-          <img src="icons/header2.png" alt="SmartPicks Logo" class="header-logo" />
+          <img src="icons/LogoSmart.png" alt="SmartPicks Logo" class="header-logo" />
+          <img src="icons/NameSmart.png" alt="SmartPicks Logo" class="header-logo" />
         </div>
 
         <!-- Lado direito: Usuário e ações -->

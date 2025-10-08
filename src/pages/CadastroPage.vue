@@ -3,7 +3,7 @@
     <div class="cadastro-wrapper">
       <div class="logo-section">
         <div class="logo-container">
-          <img src="icons/smart.png" alt="SmartPicks Logo" class="main-logo" />
+          <img src="icons/LogoSmartFull.png" alt="SmartPicks Logo" class="main-logo" />
         </div>
       </div>
       <div class="cadastro-card-wrapper">
@@ -11,7 +11,6 @@
           <q-card-section class="card-header">
             <div class="welcome-text">
               <h2 class="welcome-title">Crie sua conta!</h2>
-              <p class="welcome-subtitle">Preencha seus dados para começar</p>
             </div>
           </q-card-section>
 
