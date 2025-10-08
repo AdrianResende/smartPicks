@@ -390,39 +390,84 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isLoading.value = true;
 
+      // Verificar se o usuário está autenticado
       if (!user.value?.id) {
+        console.error('Erro: Usuário não autenticado', { user: user.value });
         throw new Error('Usuário não autenticado');
       }
 
+      // Converter arquivo para base64
       const base64 = await fileToBase64(file);
 
-      const response = await api.post('/users/avatar', {
+      // Preparar dados para envio
+      const payload = {
         user_id: user.value.id,
         avatar: base64
-      }, {
+      };
+
+      const response = await api.post('/users/avatar', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
+        timeout: 30000,
       });
 
+      // Verificar resposta da API
       if (response.data?.avatar && user.value) {
         user.value.avatar = response.data.avatar;
         localStorage.setItem('smartpicks_user', JSON.stringify(user.value));
         toast.success('Avatar atualizado com sucesso!');
         return true;
+      } else if (response.data?.message) {
+        toast.error(response.data.message);
+        return false;
+      } else {
+        console.warn('Resposta da API não contém avatar:', response.data);
+        toast.error('Resposta inválida do servidor');
+        return false;
       }
 
-      return false;
     } catch (error) {
-      const message =
-        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      console.error('Erro completo no upload de avatar:', error);
+
+      // Type guard para erro de axios
+      const axiosError = error as {
+        response?: {
+          status?: number;
+          statusText?: string;
+          data?: { message?: string };
+          headers?: unknown
+        };
+        request?: unknown;
+        message?: string
+      };
+
+      // Log detalhado do erro
+      if (axiosError.response) {
+        console.error('Erro de resposta da API:', {
+          status: axiosError.response.status,
+          statusText: axiosError.response.statusText,
+          data: axiosError.response.data,
+          headers: axiosError.response.headers
+        });
+      } else if (axiosError.request) {
+        console.error('Erro de requisição (sem resposta):', axiosError.request);
+      } else {
+        console.error('Erro geral:', axiosError.message);
+      }
+
+      const message = axiosError.response?.data?.message ||
+        axiosError.message ||
         'Erro ao fazer upload do avatar';
+
       toast.error(message);
       return false;
     } finally {
       isLoading.value = false;
     }
   };
+
+
 
   const removeAvatar = async (): Promise<boolean> => {
     try {

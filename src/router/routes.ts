@@ -51,6 +51,7 @@ const routes: RouteRecordRaw[] = [
         name: 'dashboard',
         component: () => import('pages/DashboardPage.vue'),
       },
+
     ],
   },
   {

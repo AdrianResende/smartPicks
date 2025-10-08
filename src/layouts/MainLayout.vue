@@ -11,9 +11,9 @@
         style="height: 80px; min-height: 80px"
       >
         <div class="row items-center q-gutter-md">
-          <img src="icons/LogoSmart.png" alt="SmartPicks Logo" class="header-logo" />
+          <img src="/icons/LogoSmart.png" alt="SmartPicks Logo" class="header-logo" />
           <img
-            src="icons/NameSmart.png"
+            src="/icons/NameSmart.png"
             alt="SmartPicks Logo"
             class="header-logo"
             style="margin-left: -4.5em"
@@ -21,7 +21,7 @@
         </div>
 
         <div class="row items-center no-wrap q-gutter-sm">
-          <AvatarUpload size="40px" />
+          <UserAvatar size="40px" />
 
           <span class="text-body1 text-weight-medium q-mx-md ellipsis gt-xs">
             Olá, {{ userName }}!
@@ -81,7 +81,7 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
-import AvatarUpload from 'src/components/AvatarUploadV2.vue';
+import UserAvatar from 'src/components/UserAvatar.vue';
 
 // Store e composables
 const router = useRouter();
