@@ -412,18 +412,43 @@ export const useAuthStore = defineStore('auth', () => {
         timeout: 30000,
       });
 
+      // Log detalhado da resposta para debug
+      console.log('Resposta completa da API:', {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data,
+        headers: response.headers
+      });
+
       // Verificar resposta da API
-      if (response.data?.avatar && user.value) {
-        user.value.avatar = response.data.avatar;
-        localStorage.setItem('smartpicks_user', JSON.stringify(user.value));
-        toast.success('Avatar atualizado com sucesso!');
-        return true;
-      } else if (response.data?.message) {
-        toast.error(response.data.message);
-        return false;
+      if (response.status === 200 || response.status === 201) {
+        if (response.data?.avatar && user.value) {
+          user.value.avatar = response.data.avatar;
+          localStorage.setItem('smartpicks_user', JSON.stringify(user.value));
+          toast.success('Avatar atualizado com sucesso!');
+          return true;
+        } else if (response.data?.success === true && user.value) {
+          // Caso a API retorne success: true mas sem avatar direto
+          if (response.data?.data?.avatar) {
+            user.value.avatar = response.data.data.avatar;
+          } else if (response.data?.avatar_url) {
+            user.value.avatar = response.data.avatar_url;
+          }
+          localStorage.setItem('smartpicks_user', JSON.stringify(user.value));
+          toast.success(response.data?.message || 'Avatar atualizado com sucesso!');
+          return true;
+        } else if (response.data?.message) {
+          console.warn('API retornou mensagem de erro:', response.data.message);
+          toast.error(response.data.message);
+          return false;
+        } else {
+          console.warn('Resposta da API não contém avatar nem success:', response.data);
+          toast.error('Resposta inválida do servidor');
+          return false;
+        }
       } else {
-        console.warn('Resposta da API não contém avatar:', response.data);
-        toast.error('Resposta inválida do servidor');
+        console.warn('Status HTTP não é 200/201:', response.status);
+        toast.error(`Erro do servidor: ${response.status} - ${response.statusText}`);
         return false;
       }
 

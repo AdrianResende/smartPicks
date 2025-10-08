@@ -54,13 +54,20 @@
             class="q-mb-md"
           />
 
+          <div v-if="isOptimizing" class="text-center q-mb-md">
+            <q-spinner-dots size="20px" color="primary" />
+            <div class="text-caption text-primary q-mt-xs">
+              Otimizando imagem para alta qualidade...
+            </div>
+          </div>
+
           <q-file
             v-model="selectedFile"
             outlined
             rounded
-            label="Escolher nova imagem"
+            label="Escolher nova imagem (alta qualidade)"
             accept="image/jpeg,image/png,image/gif,image/webp"
-            max-file-size="5242880"
+            max-file-size="10485760"
             @update:model-value="onFileSelected"
             @rejected="onFileRejected"
             class="q-mb-md full-width"
@@ -77,8 +84,9 @@
                 <q-tooltip class="bg-info" anchor="top middle" self="bottom middle">
                   <div class="text-body2">
                     <strong>Formatos aceitos:</strong> JPG, PNG, GIF, WebP<br />
-                    <strong>Tamanho máximo:</strong> 5MB<br />
-                    <strong>Resolução recomendada:</strong> 400x400px
+                    <strong>Tamanho máximo:</strong> 10MB<br />
+                    <strong>Resolução recomendada:</strong> 800x800px ou superior<br />
+                    <strong>Otimização:</strong> Automática para 800x800px
                   </div>
                 </q-tooltip>
               </q-btn>
@@ -86,7 +94,8 @@
           </q-file>
 
           <div class="text-caption text-grey-6 q-mb-md">
-            Dica: Use uma imagem quadrada para melhor resultado
+            💡 A imagem será automaticamente otimizada para alta qualidade<br />
+            🎯 Recomendamos imagens com resolução mínima de 800x800px
           </div>
         </q-card-section>
 
@@ -159,9 +168,10 @@ const fileError = ref<string>('');
 const isUploading = ref(false);
 const isRemoving = ref(false);
 const uploadProgress = ref(0);
+const isOptimizing = ref(false);
 
 const user = computed(() => authStore.user);
-const isProcessing = computed(() => isUploading.value || isRemoving.value);
+const isProcessing = computed(() => isUploading.value || isRemoving.value || isOptimizing.value);
 const iconSize = computed(() => {
   const size = parseInt(props.size);
   return size > 60 ? 'lg' : size > 40 ? 'md' : 'sm';
@@ -187,7 +197,7 @@ const clearPreview = () => {
 };
 
 const validateFile = (file: File): string | null => {
-  const maxSize = 5 * 1024 * 1024;
+  const maxSize = 10 * 1024 * 1024; // Aumentado para 10MB para permitir imagens de alta qualidade
   const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
   if (!allowedTypes.includes(file.type)) {
@@ -195,7 +205,7 @@ const validateFile = (file: File): string | null => {
   }
 
   if (file.size > maxSize) {
-    return 'Arquivo muito grande. Máximo permitido: 5MB.';
+    return 'Arquivo muito grande. Máximo permitido: 10MB.';
   }
 
   return null;
@@ -207,6 +217,71 @@ const createImagePreview = (file: File): Promise<string> => {
     reader.onload = (e) => resolve(e.target?.result as string);
     reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
     reader.readAsDataURL(file);
+  });
+};
+
+// Função para redimensionar e otimizar a imagem
+const resizeAndOptimizeImage = (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = () => {
+      // Definir tamanho ideal para avatar (800x800 para alta qualidade)
+      const targetSize = 800;
+      canvas.width = targetSize;
+      canvas.height = targetSize;
+
+      if (!ctx) {
+        reject(new Error('Erro ao criar contexto do canvas'));
+        return;
+      }
+
+      // Configurar qualidade máxima
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Calcular dimensões para crop centralizado
+      const size = Math.min(img.width, img.height);
+      const offsetX = (img.width - size) / 2;
+      const offsetY = (img.height - size) / 2;
+
+      // Desenhar imagem redimensionada e otimizada
+      ctx.drawImage(
+        img,
+        offsetX,
+        offsetY,
+        size,
+        size, // fonte (crop centralizado)
+        0,
+        0,
+        targetSize,
+        targetSize, // destino
+      );
+
+      // Converter para blob com alta qualidade
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Erro ao processar imagem'));
+            return;
+          }
+
+          // Criar novo arquivo otimizado
+          const optimizedFile = new File([blob], `avatar_${Date.now()}.jpg`, {
+            type: 'image/jpeg',
+          });
+
+          resolve(optimizedFile);
+        },
+        'image/jpeg',
+        0.95, // 95% de qualidade para manter alta definição
+      );
+    };
+
+    img.onerror = () => reject(new Error('Erro ao carregar imagem'));
+    img.src = URL.createObjectURL(file);
   });
 };
 
@@ -226,10 +301,24 @@ const onFileSelected = async (file: File | null) => {
   }
 
   try {
+    isOptimizing.value = true;
+
+    // Mostrar preview da imagem original primeiro
     previewUrl.value = await createImagePreview(file);
-  } catch {
+
+    // Processar e otimizar a imagem em segundo plano
+    const optimizedFile = await resizeAndOptimizeImage(file);
+    selectedFile.value = optimizedFile;
+
+    // Atualizar preview com a imagem otimizada
+    previewUrl.value = await createImagePreview(optimizedFile);
+  } catch (error) {
+    console.error('Erro ao processar imagem:', error);
     fileError.value = 'Erro ao processar imagem';
     selectedFile.value = null;
+    previewUrl.value = null;
+  } finally {
+    isOptimizing.value = false;
   }
 };
 
@@ -248,10 +337,16 @@ const handleUploadAvatar = async () => {
     const success = await authStore.uploadAvatar(selectedFile.value);
     uploadProgress.value = 100;
 
+    // A store já mostra as notificações de sucesso/erro
+    // Apenas fechar o diálogo se o upload foi bem-sucedido
     if (success) {
       closeDialog();
     }
+    // Se não foi sucesso, a store já mostrou a mensagem de erro
+    // O diálogo permanece aberto para o usuário tentar novamente
   } catch (error) {
+    // A store já lida com os erros e mostra as notificações
+    // Apenas log para debug
     console.error('Erro no upload:', error);
   } finally {
     isUploading.value = false;
@@ -279,10 +374,16 @@ const handleRemoveAvatar = () => {
       isRemoving.value = true;
       try {
         const success = await authStore.removeAvatar();
+
+        // A store já mostra as notificações de sucesso/erro
+        // Apenas fechar o diálogo se a remoção foi bem-sucedida
         if (success) {
           closeDialog();
         }
+        // Se não foi sucesso, a store já mostrou a mensagem de erro
       } catch (error) {
+        // A store já lida com os erros e mostra as notificações
+        // Apenas log para debug
         console.error('Erro ao remover avatar:', error);
       } finally {
         isRemoving.value = false;
@@ -307,6 +408,18 @@ const handleRemoveAvatar = () => {
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
+  /* Otimizações para alta qualidade e nitidez */
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  /* Suavização de borda para alta qualidade */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Manter proporção e qualidade */
+  max-width: 100%;
+  height: auto;
+  height: 100%;
 }
 
 .avatar-preview-container {
@@ -324,6 +437,16 @@ const handleRemoveAvatar = () => {
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
+  /* Otimizações para máxima qualidade no preview */
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  /* Anti-aliasing e suavização premium */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  filter: contrast(1.02) saturate(1.05);
+  /* Melhorar contraste e saturação levemente */
 }
 
 .remove-preview-btn {

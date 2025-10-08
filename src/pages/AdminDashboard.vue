@@ -1,7 +1,7 @@
 <template>
   <q-page class="admin-dashboard-container">
     <div class="welcome-section">
-      <q-icon name="psychology" size="80px" color="primary" class="q-mb-md" />
+      <q-icon name="psychology" size="80px" color="primary" class="q-mb-sm" />
       <h4 class="text-h4 text-weight-medium q-mt-none q-mb-sm">
         Bem-vindo ao Admin {{ sanitizedUserName }}!
       </h4>
