@@ -50,12 +50,11 @@
             color="primary"
             label="Novo Palpite"
             no-caps
+            icon="add"
             unelevated
           />
 
-          <q-btn class="lt-md" flat round color="primary" icon="add" size="md">
-            <q-tooltip>Novo Palpite</q-tooltip>
-          </q-btn>
+          <q-btn class="lt-md" flat round color="primary" icon="add" size="md"> </q-btn>
 
           <q-btn
             class="q-mx-md gt-xs"
@@ -69,7 +68,6 @@
             @click="onLogout"
             no-caps
           >
-            <q-tooltip>Fazer logout</q-tooltip>
           </q-btn>
 
           <q-btn
