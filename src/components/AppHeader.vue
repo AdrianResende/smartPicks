@@ -10,7 +10,6 @@
         class="row items-center justify-between q-px-md"
         style="height: 80px; min-height: 80px"
       >
-        <!-- Logo à esquerda -->
         <div class="row items-center q-gutter-md">
           <img src="/icons/LogoSmart.png" alt="SmartPicks Logo" class="AppHeader-logo" />
           <img
@@ -21,7 +20,6 @@
           />
         </div>
 
-        <!-- Barra de pesquisa (borda mais fina + cor do fundo do palpite) -->
         <div class="AppHeader-search-container">
           <q-input
             dense
@@ -39,7 +37,6 @@
           </q-input>
         </div>
 
-        <!-- Parte direita -->
         <div class="row items-center no-wrap q-gutter-sm">
           <UserAvatar size="40px" />
 
@@ -103,18 +100,12 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
 import UserAvatar from 'src/components/UserAvatar.vue';
 
-// Store e composables
 const router = useRouter();
 const authStore = useAuthStore();
-
-// Estado reativo
 const loggingOut = ref(false);
 const searchQuery = ref('');
-
-// Computed
 const userName = computed(() => authStore.user?.nome || 'Usuário');
 
-// Métodos
 const onLogout = async () => {
   loggingOut.value = true;
   try {
@@ -135,7 +126,6 @@ const onLogout = async () => {
   object-fit: contain;
 }
 
-/* Central com leve deslocamento para direita */
 .AppHeader-search-container {
   flex: 1;
   display: flex;
@@ -158,7 +148,6 @@ const onLogout = async () => {
   box-shadow: 0 0 5px rgba(33, 150, 243, 0.25);
 }
 
-/* Responsividade */
 @media (max-width: 1024px) {
   .AppHeader-logo {
     width: 150px;
@@ -203,7 +192,6 @@ const onLogout = async () => {
   }
 }
 
-/* Botões com animação */
 .q-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
