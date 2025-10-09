@@ -4,7 +4,7 @@ import { requireAuth, requireGuest, requireAdmin } from './guards';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('src/components/AppHeader.vue'),
     children: [
       {
         path: '',
@@ -20,17 +20,14 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-
   {
     path: '/acesso-negado',
     name: 'access-denied',
     component: () => import('pages/AcessoNegado.vue'),
   },
-
   {
     path: '/admin',
-    name: 'admin',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('src/components/AppHeader.vue'),
     beforeEnter: requireAdmin,
     children: [
       {
@@ -40,10 +37,9 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-
   {
     path: '/dashboard',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('src/components/AppHeader.vue'),
     beforeEnter: requireAuth,
     children: [
       {
@@ -51,7 +47,6 @@ const routes: RouteRecordRaw[] = [
         name: 'dashboard',
         component: () => import('pages/DashboardPage.vue'),
       },
-
     ],
   },
   {

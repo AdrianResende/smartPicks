@@ -10,16 +10,36 @@
         class="row items-center justify-between q-px-md"
         style="height: 80px; min-height: 80px"
       >
+        <!-- Logo à esquerda -->
         <div class="row items-center q-gutter-md">
-          <img src="/icons/LogoSmart.png" alt="SmartPicks Logo" class="header-logo" />
+          <img src="/icons/LogoSmart.png" alt="SmartPicks Logo" class="AppHeader-logo" />
           <img
             src="/icons/NameSmart.png"
-            alt="SmartPicks Logo"
-            class="header-logo"
+            alt="SmartPicks Nome"
+            class="AppHeader-logo"
             style="margin-left: -4.5em"
           />
         </div>
 
+        <!-- Barra de pesquisa (borda mais fina + cor do fundo do palpite) -->
+        <div class="AppHeader-search-container">
+          <q-input
+            dense
+            rounded
+            debounce="300"
+            v-model="searchQuery"
+            placeholder="Buscar..."
+            class="AppHeader-search"
+            bg-color="white"
+            outlined
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" color="primary" />
+            </template>
+          </q-input>
+        </div>
+
+        <!-- Parte direita -->
         <div class="row items-center no-wrap q-gutter-sm">
           <UserAvatar size="40px" />
 
@@ -89,8 +109,9 @@ const authStore = useAuthStore();
 
 // Estado reativo
 const loggingOut = ref(false);
+const searchQuery = ref('');
 
-// Computed properties
+// Computed
 const userName = computed(() => authStore.user?.nome || 'Usuário');
 
 // Métodos
@@ -108,74 +129,86 @@ const onLogout = async () => {
 </script>
 
 <style scoped>
-.header-logo {
+.AppHeader-logo {
   width: 180px;
   height: 60px;
   object-fit: contain;
-  transition: transform 0.3s ease;
 }
 
-.header-logo:hover {
-  transform: scale(1.05);
+/* Central com leve deslocamento para direita */
+.AppHeader-search-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin-left: 60px;
 }
 
+.AppHeader-search {
+  width: 100%;
+  max-width: 400px;
+  transition: all 0.25s ease-in-out;
+  border: 1px solid var(--q-primary);
+  border-radius: 25px;
+  background-color: #fafafa;
+}
+
+.AppHeader-search:hover,
+.AppHeader-search.q-field--focused {
+  border-color: var(--q-primary);
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.25);
+}
+
+/* Responsividade */
 @media (max-width: 1024px) {
-  .header-logo {
+  .AppHeader-logo {
     width: 150px;
     height: 50px;
+  }
+
+  .AppHeader-search-container {
+    margin-left: 40px;
   }
 }
 
 @media (max-width: 768px) {
-  .header-logo {
+  .AppHeader-logo {
     width: 120px;
     height: 40px;
+  }
+
+  .AppHeader-search {
+    max-width: 280px;
+  }
+
+  .AppHeader-search-container {
+    margin-left: 20px;
   }
 }
 
 @media (max-width: 600px) {
-  .header-logo {
+  .AppHeader-logo {
     width: 100px;
     height: 35px;
+  }
+
+  .AppHeader-search-container {
+    display: none;
   }
 }
 
 @media (max-width: 480px) {
-  .header-logo {
+  .AppHeader-logo {
     width: 80px;
     height: 30px;
   }
 }
 
-/* Melhorias de responsividade para o header */
-@media (max-width: 768px) {
-  .q-toolbar {
-    padding: 0 8px !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .q-toolbar {
-    padding: 0 4px !important;
-  }
-
-  .q-btn {
-    min-width: auto;
-  }
-}
-
-/* Animações suaves */
+/* Botões com animação */
 .q-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .q-btn:hover {
   transform: translateY(-1px);
-}
-
-/* Estilo para o header */
-.q-header {
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 </style>

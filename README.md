@@ -198,13 +198,13 @@ smartPicks/
 │   │   ├── i18n.ts            # Configuração internacionalização
 │   │   └── toastify.ts        # Configuração toast notifications
 │   ├── components/            # Componentes reutilizáveis
+│   │   └── Header.vue     # Layout principal (header condicional)
+│   │   └── UseAvatar.vue     # Layout principal (header condicional)
 │   ├── css/                   # Estilos globais
 │   │   ├── app.scss           # Estilos customizados
 │   │   └── quasar.variables.scss
 │   ├── i18n/                  # Traduções
 │   │   └── en-US/             # Inglês (padrão)
-│   ├── layouts/               # Layouts da aplicação
-│   │   └── MainLayout.vue     # Layout principal (header condicional)
 │   ├── pages/                 # Páginas/Views
 │   │   ├── LoginPage.vue      # Página de login
 │   │   ├── CadastroPage.vue   # Página de cadastro
@@ -410,7 +410,7 @@ Response: { nome: string, email: string, perfil: string }
 
 ## 🎨 Componentes Principais
 
-### MainLayout.vue
+### Header.vue
 
 Header condicional que aparece apenas quando usuário está autenticado:
 
@@ -464,7 +464,7 @@ router.beforeEach(requireAuth);
 
 ### Problema: Header aparece em páginas de login
 
-**Solução**: MainLayout.vue deve ter `v-if`:
+**Solução**: Header.vue deve ter `v-if`:
 
 ```vue
 <q-header v-if="authStore.isAuthenticated"></q-header>
