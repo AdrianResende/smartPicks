@@ -20,12 +20,12 @@
           Detalhes do Bilhete
         </div>
         <div class="q-mb-sm text-grey-8 text-left">
-          Imagem da BET:
+          Imagem da BET*:
         </div>
         <div class="text-center q-mb-md">
           <div class="q-mb-md">
-            <q-file v-model="imagemPalpite" outlined accept="image/*" label="Adicionar imagem (opcional)"
-              class="upload-input" @input="onImageUpload">
+            <q-file v-model="imagemPalpite" outlined accept="image/*" label="Adicionar imagem" class="upload-input"
+              @input="onImageUpload">
               <template v-slot:prepend>
                 <q-icon name="cloud_upload" />
               </template>
@@ -44,9 +44,7 @@
           Link da aposta (opcional)
         </div>
         <q-input v-model="linkAposta" type="text" placeholder="https://www.bet365.bet.br/#/HO/" outlined dense
-          class="q-mb-md" bg-color="grey-2" @keyup.enter="enviarPalpite" :error="erro !== null"
-          :error-message="erro ?? undefined" />
-        <div v-if="erro" class="text-negative text-caption q-mb-md">{{ erro }}</div>
+          class="q-mb-md" bg-color="grey-2" @keyup.enter="enviarPalpite" />
         <q-card-actions align="center">
           <q-btn size="lg" class="q-pa-lg" color="primary" style="min-width: 200px; font-size: 16px;" no-caps
             @click="enviarPalpite" :loading="enviando" :disable="!palpiteValido">
@@ -84,7 +82,6 @@ const linkAposta = ref<string>('');
 const imagemPalpite = ref<File | null>(null);
 const imagemPreview = ref<string | null>(null);
 const enviando = ref(false);
-const erro = ref<string | null>(null);
 
 
 const dialogVisible = computed({
@@ -102,7 +99,6 @@ watch(() => props.show, (novoValor) => {
     palpite.value = null;
     imagemPalpite.value = null;
     imagemPreview.value = null;
-    erro.value = null;
   }
 });
 
@@ -129,17 +125,18 @@ const fecharModal = () => {
 };
 
 const enviarPalpite = async () => {
-  erro.value = null;
-
   if (!palpiteValido.value) {
-    erro.value = 'Por favor, adicione uma imagem da aposta';
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, adicione uma imagem da aposta',
+      position: 'top-right'
+    });
     return;
   }
 
   enviando.value = true;
 
   try {
-    // Criar FormData para enviar a imagem
     const formData = new FormData();
 
     if (tituloComentario.value) {
@@ -152,7 +149,7 @@ const enviarPalpite = async () => {
       formData.append('imagem', imagemPalpite.value);
     }
 
-    // Fazer requisição para a API
+
     const response = await api.post('/palpites', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -164,12 +161,11 @@ const enviarPalpite = async () => {
       $q.notify({
         type: 'positive',
         message: 'Palpite criado com sucesso!',
-        position: 'top'
+        position: 'top-right'
       });
     }
 
   } catch (error) {
-    console.error('Erro ao criar palpite:', error);
 
     let mensagemErro = 'Erro ao enviar palpite. Tente novamente.';
 
@@ -183,12 +179,10 @@ const enviarPalpite = async () => {
       }
     }
 
-    erro.value = mensagemErro;
-
     $q.notify({
       type: 'negative',
       message: mensagemErro,
-      position: 'top'
+      position: 'top-right'
     });
   } finally {
     enviando.value = false;
