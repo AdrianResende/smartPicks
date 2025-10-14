@@ -78,8 +78,6 @@ const onLogout = async () => {
 
 const onNovoPalpite = (palpite: number) => {
   console.log('Novo palpite recebido:', palpite);
-  // Aqui você pode implementar a lógica para salvar o palpite
-  // Por exemplo: await palpiteService.criarPalpite(palpite);
 };
 </script>
 

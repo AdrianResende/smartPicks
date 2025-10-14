@@ -15,7 +15,33 @@ export default defineConfigWithVueTs(
      *
      * ESLint requires "ignores" key to be the only one in this object
      */
-    // ignores: []
+    ignores: [
+      // Dependências
+      'node_modules/',
+      'dist/',
+      'build/',
+
+      // Arquivos de configuração gerados
+      '*.config.js',
+      '*.config.ts.temporary.compiled.*',
+
+      // Arquivos de ambiente
+      '.env*',
+
+      // Logs
+      '*.log',
+
+      // Coverage
+      'coverage/',
+
+      // Arquivos temporários
+      '.tmp/',
+      '.cache/',
+
+      // Arquivos do sistema
+      '.DS_Store',
+      'Thumbs.db',
+    ],
   },
 
   pluginQuasar.configs.recommended(),

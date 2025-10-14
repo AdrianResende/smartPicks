@@ -29,28 +29,31 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { QDialog, QCard, QCardSection, QCardActions, QBtn, QInput, QSpace } from 'quasar';
+import { QDialog, QCard, QCardSection, QCardActions, QBtn, QInput, QSpace, useQuasar } from 'quasar';
 
-// Props
+
 interface Props {
   show: boolean;
 }
 
 const props = defineProps<Props>();
 
-// Emits
+
 const emit = defineEmits<{
   (e: 'update:show', value: boolean): void;
   (e: 'close'): void;
   (e: 'novo-palpite', palpite: number): void;
 }>();
 
+// Quasar
+const $q = useQuasar();
+
 // Estado
 const palpite = ref<number | null>(null);
 const enviando = ref(false);
 const erro = ref<string | null>(null);
 
-// Computed
+
 const dialogVisible = computed({
   get: () => props.show,
   set: (value) => emit('update:show', value)
@@ -60,16 +63,13 @@ const palpiteValido = computed(() => {
   return palpite.value !== null && palpite.value > 0;
 });
 
-// Watchers
 watch(() => props.show, (novoValor) => {
   if (novoValor) {
-    // Reset quando abrir a modal
     palpite.value = null;
     erro.value = null;
   }
 });
 
-// Métodos
 const fecharModal = () => {
   dialogVisible.value = false;
   emit('close');
@@ -92,8 +92,7 @@ const enviarPalpite = async () => {
     emit('novo-palpite', palpite.value!);
     fecharModal();
 
-    // Aqui você pode adicionar uma notificação de sucesso
-    // $q.notify({ type: 'positive', message: 'Palpite enviado com sucesso!' });
+    $q.notify({ type: 'positive', message: 'Palpite enviado com sucesso!' });
 
   } catch {
     erro.value = 'Erro ao enviar palpite. Tente novamente.';
