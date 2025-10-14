@@ -12,45 +12,34 @@
   </q-page>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, onMounted } from 'vue';
+<script setup lang="ts">
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
 import { toast } from 'vue3-toastify';
 
-export default defineComponent({
-  name: 'DashboardPage',
+const router = useRouter();
+const authStore = useAuthStore();
 
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
+const sanitizedUserName = computed(() => {
+  return authStore.user?.nome ? authStore.sanitizeInput(authStore.user.nome) : 'Usuário';
+});
 
-    const sanitizedUserName = computed(() => {
-      return authStore.user?.nome ? authStore.sanitizeInput(authStore.user.nome) : 'Usuário';
-    });
-
-    onMounted(async () => {
-      if (!authStore.isAuthenticated) {
-        try {
-          const isValid = await authStore.validateToken();
-          if (!isValid) {
-            toast.error('Sessão expirada. Faça login novamente.');
-            await router.push('/');
-            return;
-          }
-        } catch {
-          toast.error('Erro ao validar sessão. Faça login novamente.');
-          await router.push('/');
-          return;
-        }
+onMounted(async () => {
+  if (!authStore.isAuthenticated) {
+    try {
+      const isValid = await authStore.validateToken();
+      if (!isValid) {
+        toast.error('Sessão expirada. Faça login novamente.');
+        await router.push('/');
+        return;
       }
-    });
-
-    return {
-      sanitizedUserName,
-      authStore,
-    };
-  },
+    } catch {
+      toast.error('Erro ao validar sessão. Faça login novamente.');
+      await router.push('/');
+      return;
+    }
+  }
 });
 </script>
 

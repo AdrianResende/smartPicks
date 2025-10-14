@@ -17,18 +17,9 @@
           <q-card-section class="card-content">
             <q-form @submit.prevent="onSubmit" class="login-form">
               <div class="input-group">
-                <q-input
-                  v-model="email"
-                  outlined
-                  type="email"
-                  label="E-mail"
-                  :rules="[(val) => !!val || 'Campo obrigatório']"
-                  class="modern-input"
-                  size="lg"
-                  color="primary"
-                  label-color="grey-7"
-                  bg-color="grey-1"
-                >
+                <q-input v-model="email" outlined type="email" label="E-mail"
+                  :rules="[(val) => !!val || 'Campo obrigatório']" class="modern-input" size="lg" color="primary"
+                  label-color="grey-7" bg-color="grey-1">
                   <template v-slot:prepend>
                     <q-icon name="mail" color="grey-6" />
                   </template>
@@ -36,18 +27,9 @@
               </div>
 
               <div class="input-group">
-                <q-input
-                  v-model="password"
-                  outlined
-                  type="password"
-                  label="Senha"
-                  :rules="[(val) => !!val || 'Campo obrigatório']"
-                  class="modern-input"
-                  size="lg"
-                  color="primary"
-                  label-color="grey-7"
-                  bg-color="grey-1"
-                >
+                <q-input v-model="password" outlined type="password" label="Senha"
+                  :rules="[(val) => !!val || 'Campo obrigatório']" class="modern-input" size="lg" color="primary"
+                  label-color="grey-7" bg-color="grey-1">
                   <template v-slot:prepend>
                     <q-icon name="lock" color="grey-6" />
                   </template>
@@ -55,19 +37,8 @@
               </div>
 
               <div class="action-group">
-                <q-btn
-                  type="submit"
-                  unelevated
-                  rounded
-                  color="primary"
-                  text-color="white"
-                  label="Entrar"
-                  class="login-btn"
-                  size="lg"
-                  :loading="isSubmitting"
-                  :disable="isLoginDisabled"
-                  no-caps
-                >
+                <q-btn type="submit" unelevated rounded color="primary" text-color="white" label="Entrar"
+                  class="login-btn" size="lg" :loading="isSubmitting" :disable="isLoginDisabled" no-caps>
                   <template v-slot:loading>
                     <q-spinner-hourglass class="on-left" />
                     Entrando...
@@ -87,63 +58,52 @@
   </q-page>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
 import { toast } from 'vue3-toastify';
 
-export default defineComponent({
-  name: 'LoginPage',
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
-    const email = ref('');
-    const password = ref('');
+const router = useRouter();
+const authStore = useAuthStore();
+const email = ref('');
+const password = ref('');
 
-    const isLoginDisabled = computed(
-      () =>
-        authStore.isLoading || !email.value || !password.value || authStore.isBlocked(email.value),
-    );
+const isLoginDisabled = computed(
+  () =>
+    authStore.isLoading || !email.value || !password.value || authStore.isBlocked(email.value),
+);
 
-    const onSubmit = async () => {
-      if (isLoginDisabled.value) {
-        if (authStore.isBlocked(email.value)) {
-          const remainingTime = authStore.getRemainingBlockTime(email.value);
-          toast.error(`Conta bloqueada. Tente novamente em ${remainingTime} minutos.`);
-        } else {
-          toast.error('Informe e-mail e senha para continuar.');
-        }
-        return;
+const isSubmitting = computed(() => authStore.isLoading);
+
+const onSubmit = async () => {
+  if (isLoginDisabled.value) {
+    if (authStore.isBlocked(email.value)) {
+      const remainingTime = authStore.getRemainingBlockTime(email.value);
+      toast.error(`Conta bloqueada. Tente novamente em ${remainingTime} minutos.`);
+    } else {
+      toast.error('Informe e-mail e senha para continuar.');
+    }
+    return;
+  }
+
+  const success = await authStore.login(email.value, password.value);
+
+  if (success) {
+    const redirectParam = router.currentRoute.value.query.redirect;
+    const redirectTo =
+      typeof redirectParam === 'string' && redirectParam.length > 0 ? redirectParam : undefined;
+    try {
+      if (redirectTo) {
+        await router.replace(redirectTo);
+      } else {
+        await router.replace({ name: 'dashboard' });
       }
-
-      const success = await authStore.login(email.value, password.value);
-
-      if (success) {
-        const redirectParam = router.currentRoute.value.query.redirect;
-        const redirectTo =
-          typeof redirectParam === 'string' && redirectParam.length > 0 ? redirectParam : undefined;
-        try {
-          if (redirectTo) {
-            await router.replace(redirectTo);
-          } else {
-            await router.replace({ name: 'dashboard' });
-          }
-        } catch {
-          await router.replace({ name: 'dashboard' }).catch(() => {});
-        }
-      }
-    };
-
-    return {
-      email,
-      password,
-      onSubmit,
-      isSubmitting: computed(() => authStore.isLoading),
-      isLoginDisabled,
-    };
-  },
-});
+    } catch {
+      await router.replace({ name: 'dashboard' }).catch(() => { });
+    }
+  }
+};
 </script>
 
 <style scoped>

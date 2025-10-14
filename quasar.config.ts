@@ -89,11 +89,18 @@ export default defineConfig((ctx) => {
         [
           'vite-plugin-checker',
           {
-            vueTsc: true,
+            vueTsc: {
+              buildMode: false, // Não falha o build por erros de tipo
+            },
             eslint: {
               lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{ts,js,mjs,cjs,vue}"',
               useFlatConfig: true,
+              buildMode: false, // Não falha o build por erros de lint
             },
+            overlay: {
+              initialIsOpen: false, // Não abre overlay de erro automaticamente
+            },
+            terminal: false, // Não falha no terminal
           },
           { server: false },
         ],

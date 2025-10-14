@@ -1,36 +1,16 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header
-      v-if="authStore.isAuthenticated"
-      elevated
-      class="bg-white text-dark"
-      style="height: 80px; min-height: 80px"
-    >
-      <q-toolbar
-        class="row items-center justify-between q-px-md"
-        style="height: 80px; min-height: 80px"
-      >
+    <q-header v-if="authStore.isAuthenticated" elevated class="bg-white text-dark"
+      style="height: 80px; min-height: 80px">
+      <q-toolbar class="row items-center justify-between q-px-md" style="height: 80px; min-height: 80px">
         <div class="row items-center q-gutter-md">
           <img src="/icons/LogoSmart.png" alt="SmartPicks Logo" class="AppHeader-logo" />
-          <img
-            src="/icons/NameSmart.png"
-            alt="SmartPicks Nome"
-            class="AppHeader-logo"
-            style="margin-left: -4.5em"
-          />
+          <img src="/icons/NameSmart.png" alt="SmartPicks Nome" class="AppHeader-logo" style="margin-left: -4.5em" />
         </div>
 
         <div class="AppHeader-search-container">
-          <q-input
-            dense
-            rounded
-            debounce="300"
-            v-model="searchQuery"
-            placeholder="Buscar..."
-            class="AppHeader-search"
-            bg-color="white"
-            outlined
-          >
+          <q-input dense rounded debounce="300" v-model="searchQuery" placeholder="Buscar..." class="AppHeader-search"
+            bg-color="white" outlined>
             <template v-slot:prepend>
               <q-icon name="search" color="primary" />
             </template>
@@ -44,42 +24,17 @@
             Olá, {{ userName }}!
           </span>
 
-          <q-btn
-            class="q-mx-md gt-sm"
-            rounded
-            color="primary"
-            label="Novo Palpite"
-            no-caps
-            icon="add"
-            unelevated
-          />
+          <q-btn class="q-mx-md gt-sm" rounded color="primary" label="Novo Palpite" no-caps icon="add" unelevated
+            @click="dialog = true" />
 
           <q-btn class="lt-md" flat round color="primary" icon="add" size="md"> </q-btn>
 
-          <q-btn
-            class="q-mx-md gt-xs"
-            unelevated
-            rounded
-            color="negative"
-            text-color="white"
-            icon="logout"
-            label="Sair"
-            :loading="loggingOut"
-            @click="onLogout"
-            no-caps
-          >
+          <q-btn class="q-mx-md gt-xs" unelevated rounded color="negative" text-color="white" icon="logout" label="Sair"
+            :loading="loggingOut" @click="onLogout" no-caps>
           </q-btn>
 
-          <q-btn
-            class="lt-sm"
-            flat
-            round
-            color="negative"
-            icon="logout"
-            size="md"
-            :loading="loggingOut"
-            @click="onLogout"
-          >
+          <q-btn class="lt-sm" flat round color="negative" icon="logout" size="md" :loading="loggingOut"
+            @click="onLogout">
             <q-tooltip>Sair</q-tooltip>
           </q-btn>
         </div>
@@ -90,6 +45,8 @@
       <router-view />
     </q-page-container>
   </q-layout>
+
+  <ModalPalpite v-model:show="dialog" @close="dialog = false" @novo-palpite="onNovoPalpite" />
 </template>
 
 <script setup lang="ts">
@@ -97,23 +54,32 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
 import UserAvatar from 'src/components/UserAvatar.vue';
+import { QLayout, QHeader, QToolbar, QBtn, QIcon, QInput, QPageContainer, QTooltip } from 'quasar';
+import ModalPalpite from 'src/components/ModalPalpite.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const loggingOut = ref(false);
 const searchQuery = ref('');
 const userName = computed(() => authStore.user?.nome || 'Usuário');
+const dialog = ref(false);
 
 const onLogout = async () => {
   loggingOut.value = true;
   try {
     await authStore.logout();
-    await router.replace({ name: 'login' }).catch(() => {});
+    await router.replace({ name: 'login' }).catch(() => { });
   } catch (error) {
     console.error('Erro ao fazer logout:', error);
   } finally {
     loggingOut.value = false;
   }
+};
+
+const onNovoPalpite = (palpite: number) => {
+  console.log('Novo palpite recebido:', palpite);
+  // Aqui você pode implementar a lógica para salvar o palpite
+  // Por exemplo: await palpiteService.criarPalpite(palpite);
 };
 </script>
 

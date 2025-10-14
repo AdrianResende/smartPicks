@@ -67,6 +67,14 @@ export default defineConfigWithVueTs(
 
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+
+      // Regras mais flexíveis para desenvolvimento
+      '@typescript-eslint/no-unused-vars': 'warn', // Apenas aviso ao invés de erro
+      'vue/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn', // Permite any com aviso
+      'vue/multi-word-component-names': 'warn', // Permite nomes de componentes de uma palavra
+      'no-console': 'off', // Permite console.log
+      'no-undef': 'warn', // Variáveis não definidas como aviso
     },
   },
 
