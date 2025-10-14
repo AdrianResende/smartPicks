@@ -76,8 +76,8 @@ const onLogout = async () => {
   }
 };
 
-const onNovoPalpite = (palpite: number) => {
-  console.log('Novo palpite recebido:', palpite);
+const onNovoPalpite = (dados: { titulo: string; linkAposta: string; imagem: File | null }) => {
+  console.log('Novo palpite recebido:', dados);
 };
 </script>
 
