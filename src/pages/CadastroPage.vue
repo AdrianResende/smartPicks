@@ -331,7 +331,6 @@ const onSubmit = async () => {
   margin: 0 auto;
 }
 
-/* Seção da Logo */
 .logo-section {
   display: flex;
   align-items: center;
