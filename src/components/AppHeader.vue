@@ -27,7 +27,7 @@
           <q-btn class="q-mx-md gt-sm" rounded color="primary" label="Novo Palpite" no-caps icon="add" unelevated
             @click="dialog = true" />
 
-          <q-btn class="lt-md" flat round color="primary" icon="add" size="md"> </q-btn>
+          <q-btn class="lt-md" flat round color="primary" icon="add" size="md" @click="dialog = true"> </q-btn>
 
           <q-btn class="q-mx-md gt-xs" unelevated rounded color="negative" text-color="white" icon="logout" label="Sair"
             :loading="loggingOut" @click="onLogout" no-caps>
