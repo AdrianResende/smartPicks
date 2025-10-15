@@ -424,11 +424,11 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('Resposta do avatar upload:', response.data);
 
       if (response.status === 200 || response.status === 201) {
-                // Se contém a mensagem "atualizado com sucesso", é sucesso
+        // Se contém a mensagem "atualizado com sucesso", é sucesso
         if (response.data?.message && response.data.message.includes('atualizado com sucesso')) {
           // Atualizar avatar no usuário se disponível
           let newAvatarUrl = null;
-          
+
           if (response.data?.avatar) {
             newAvatarUrl = response.data.avatar;
           } else if (response.data?.data?.avatar) {
@@ -436,14 +436,14 @@ export const useAuthStore = defineStore('auth', () => {
           } else if (response.data?.avatar_url) {
             newAvatarUrl = response.data.avatar_url;
           }
-          
+
           if (newAvatarUrl && user.value) {
             // Criar um novo objeto para forçar reatividade
             user.value = { ...user.value, avatar: newAvatarUrl };
             localStorage.setItem('smartpicks_user', JSON.stringify(user.value));
             console.log('Avatar atualizado no store:', newAvatarUrl);
           }
-          
+
           toast.success(response.data.message);
           return true;
         } else if (response.data?.avatar && user.value) {
@@ -460,7 +460,7 @@ export const useAuthStore = defineStore('auth', () => {
           } else if (response.data?.avatar_url) {
             newAvatarUrl = response.data.avatar_url;
           }
-          
+
           if (newAvatarUrl) {
             // Criar um novo objeto para forçar reatividade
             user.value = { ...user.value, avatar: newAvatarUrl };
