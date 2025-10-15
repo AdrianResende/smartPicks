@@ -12,7 +12,10 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-// Configuração da fonte Inter
+// SMARTPICKS DESIGN SYSTEM
+// ========================================
+
+// Typography
 $typography-font-family:
   'Inter',
   -apple-system,
@@ -21,12 +24,50 @@ $typography-font-family:
   Roboto,
   sans-serif;
 
+// Brand Colors
 $primary: #2ebac6;
-$secondary: #26a69a;
-$accent: #9c27b0;
+$secondary: #0582a6;
+$accent: #00796b;
 
-$dark: #1d1d1d;
-$dark-page: #121212;
+// Status Colors
+$positive: #4caf50;
+$negative: #f44336;
+$info: #2196f3;
+$warning: #ff9800;
+
+// Neutral Colors
+$dark: #0f4c75;
+$dark-page: #1a1a1a;
+$grey-1: #fafafa;
+$grey-2: #f5f5f5;
+$grey-4: #e0e0e0;
+$grey-6: #757575;
+$grey-8: #424242;
+
+// Spacing Scale
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+$space-xxl: 48px;
+
+// Border Radius
+$border-radius-xs: 4px;
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 16px;
+$border-radius-xl: 24px;
+
+// Shadows
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+$shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.25);
+
+// Transitions
+$transition-fast: 0.15s ease;
+$transition-base: 0.3s ease;
+$transition-slow: 0.5s ease;
 
 $positive: #21ba45;
 $negative: #c10015;

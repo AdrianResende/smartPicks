@@ -1,0 +1,415 @@
+// SMARTPICKS UTILITY CLASSES
+// ========================================
+
+// Spacing Utilities
+.sp-xs {
+  padding: $space-xs !important;
+}
+.sp-sm {
+  padding: $space-sm !important;
+}
+.sp-md {
+  padding: $space-md !important;
+}
+.sp-lg {
+  padding: $space-lg !important;
+}
+.sp-xl {
+  padding: $space-xl !important;
+}
+.sp-xxl {
+  padding: $space-xxl !important;
+}
+
+.spt-xs {
+  padding-top: $space-xs !important;
+}
+.spt-sm {
+  padding-top: $space-sm !important;
+}
+.spt-md {
+  padding-top: $space-md !important;
+}
+.spt-lg {
+  padding-top: $space-lg !important;
+}
+.spt-xl {
+  padding-top: $space-xl !important;
+}
+.spt-xxl {
+  padding-top: $space-xxl !important;
+}
+
+.spb-xs {
+  padding-bottom: $space-xs !important;
+}
+.spb-sm {
+  padding-bottom: $space-sm !important;
+}
+.spb-md {
+  padding-bottom: $space-md !important;
+}
+.spb-lg {
+  padding-bottom: $space-lg !important;
+}
+.spb-xl {
+  padding-bottom: $space-xl !important;
+}
+.spb-xxl {
+  padding-bottom: $space-xxl !important;
+}
+
+.spl-xs {
+  padding-left: $space-xs !important;
+}
+.spl-sm {
+  padding-left: $space-sm !important;
+}
+.spl-md {
+  padding-left: $space-md !important;
+}
+.spl-lg {
+  padding-left: $space-lg !important;
+}
+.spl-xl {
+  padding-left: $space-xl !important;
+}
+.spl-xxl {
+  padding-left: $space-xxl !important;
+}
+
+.spr-xs {
+  padding-right: $space-xs !important;
+}
+.spr-sm {
+  padding-right: $space-sm !important;
+}
+.spr-md {
+  padding-right: $space-md !important;
+}
+.spr-lg {
+  padding-right: $space-lg !important;
+}
+.spr-xl {
+  padding-right: $space-xl !important;
+}
+.spr-xxl {
+  padding-right: $space-xxl !important;
+}
+
+.sm-xs {
+  margin: $space-xs !important;
+}
+.sm-sm {
+  margin: $space-sm !important;
+}
+.sm-md {
+  margin: $space-md !important;
+}
+.sm-lg {
+  margin: $space-lg !important;
+}
+.sm-xl {
+  margin: $space-xl !important;
+}
+.sm-xxl {
+  margin: $space-xxl !important;
+}
+
+.smt-xs {
+  margin-top: $space-xs !important;
+}
+.smt-sm {
+  margin-top: $space-sm !important;
+}
+.smt-md {
+  margin-top: $space-md !important;
+}
+.smt-lg {
+  margin-top: $space-lg !important;
+}
+.smt-xl {
+  margin-top: $space-xl !important;
+}
+.smt-xxl {
+  margin-top: $space-xxl !important;
+}
+
+.smb-xs {
+  margin-bottom: $space-xs !important;
+}
+.smb-sm {
+  margin-bottom: $space-sm !important;
+}
+.smb-md {
+  margin-bottom: $space-md !important;
+}
+.smb-lg {
+  margin-bottom: $space-lg !important;
+}
+.smb-xl {
+  margin-bottom: $space-xl !important;
+}
+.smb-xxl {
+  margin-bottom: $space-xxl !important;
+}
+
+// Border Radius Utilities
+.sr-xs {
+  border-radius: $border-radius-xs !important;
+}
+.sr-sm {
+  border-radius: $border-radius-sm !important;
+}
+.sr-md {
+  border-radius: $border-radius-md !important;
+}
+.sr-lg {
+  border-radius: $border-radius-lg !important;
+}
+.sr-xl {
+  border-radius: $border-radius-xl !important;
+}
+.sr-full {
+  border-radius: 50% !important;
+}
+
+// Shadow Utilities
+.ss-sm {
+  box-shadow: $shadow-sm !important;
+}
+.ss-md {
+  box-shadow: $shadow-md !important;
+}
+.ss-lg {
+  box-shadow: $shadow-lg !important;
+}
+.ss-none {
+  box-shadow: none !important;
+}
+
+// Transition Utilities
+.st-fast {
+  transition: all $transition-fast !important;
+}
+.st-base {
+  transition: all $transition-base !important;
+}
+.st-slow {
+  transition: all $transition-slow !important;
+}
+
+// Flex Utilities
+.sf-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sf-between {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.sf-around {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+}
+
+.sf-column {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.sf-column-center {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+// Text Utilities
+.st-primary {
+  color: $primary !important;
+}
+.st-secondary {
+  color: $secondary !important;
+}
+.st-accent {
+  color: $accent !important;
+}
+.st-positive {
+  color: $positive !important;
+}
+.st-negative {
+  color: $negative !important;
+}
+.st-warning {
+  color: $warning !important;
+}
+.st-info {
+  color: $info !important;
+}
+.st-dark {
+  color: $dark !important;
+}
+
+// Background Utilities
+.sb-primary {
+  background-color: $primary !important;
+}
+.sb-secondary {
+  background-color: $secondary !important;
+}
+.sb-accent {
+  background-color: $accent !important;
+}
+.sb-positive {
+  background-color: $positive !important;
+}
+.sb-negative {
+  background-color: $negative !important;
+}
+.sb-warning {
+  background-color: $warning !important;
+}
+.sb-info {
+  background-color: $info !important;
+}
+.sb-dark {
+  background-color: $dark !important;
+}
+.sb-grey-1 {
+  background-color: $grey-1 !important;
+}
+.sb-grey-2 {
+  background-color: $grey-2 !important;
+}
+
+// Size Utilities
+.sw-full {
+  width: 100% !important;
+}
+.sh-full {
+  height: 100% !important;
+}
+.sw-auto {
+  width: auto !important;
+}
+.sh-auto {
+  height: auto !important;
+}
+
+// Position Utilities
+.sp-relative {
+  position: relative !important;
+}
+.sp-absolute {
+  position: absolute !important;
+}
+.sp-fixed {
+  position: fixed !important;
+}
+.sp-sticky {
+  position: sticky !important;
+}
+
+// Overflow Utilities
+.so-hidden {
+  overflow: hidden !important;
+}
+.so-auto {
+  overflow: auto !important;
+}
+.so-scroll {
+  overflow: scroll !important;
+}
+
+// Cursor Utilities
+.sc-pointer {
+  cursor: pointer !important;
+}
+.sc-not-allowed {
+  cursor: not-allowed !important;
+}
+.sc-wait {
+  cursor: wait !important;
+}
+
+// Hover Effects
+.sh-lift {
+  transition: transform $transition-base !important;
+  &:hover {
+    transform: translateY(-2px) !important;
+  }
+}
+
+.sh-scale {
+  transition: transform $transition-base !important;
+  &:hover {
+    transform: scale(1.05) !important;
+  }
+}
+
+// Custom Components
+.sp-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: $border-radius-xl;
+  box-shadow: $shadow-md;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.sp-gradient-bg {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+}
+
+.sp-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Animation Classes
+@keyframes sp-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sp-fade-in {
+  animation: sp-fade-in $transition-base ease-out;
+}
+
+// Responsive Utilities
+@media (max-width: 600px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 601px) {
+  .show-on-mobile-only {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hide-on-tablet {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .show-on-tablet-only {
+    display: none !important;
+  }
+}

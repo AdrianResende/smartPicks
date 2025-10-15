@@ -28,19 +28,22 @@ export default defineConfigWithVueTs(
       // Arquivos de ambiente
       '.env*',
 
-      // Logs
+      // Logs e coverage
       '*.log',
-
-      // Coverage
       'coverage/',
 
       // Arquivos temporários
       '.tmp/',
       '.cache/',
+      '*.temporary.compiled.*',
 
       // Arquivos do sistema
       '.DS_Store',
       'Thumbs.db',
+
+      // Arquivos de build/deploy
+      '.firebase/',
+      'y/',
     ],
   },
 

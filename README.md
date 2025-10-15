@@ -1,6 +1,6 @@
-# 🧠 SmartPicks Frontend
+# 🧠 SmartPicks - Plataforma de Apostas Inteligentes
 
-> Sistema inteligente de recomendações construído com Vue 3, Quasar Framework e TypeScript
+> Sistema moderno de palpites e apostas construído com Vue 3, Quasar Framework e TypeScript
 
 [![Quasar](https://img.shields.io/badge/Quasar-v2.18.5-1976D2?style=flat&logo=quasar)](https://quasar.dev/)
 [![Vue.js](https://img.shields.io/badge/Vue.js-v3-4FC08D?style=flat&logo=vue.js)](https://vuejs.org/)
@@ -10,95 +10,119 @@
 ## 📋 Índice
 
 - [Sobre o Projeto](#-sobre-o-projeto)
-- [Fluxo da Aplicação](#-fluxo-da-aplicação)
-- [Arquitetura](#-arquitetura)
-- [Instalação](#-instalação)
-- [Comandos Úteis](#-comandos-úteis)
-- [Estrutura de Pastas](#-estrutura-de-pastas)
-- [Guia de Desenvolvimento](#-guia-de-desenvolvimento)
-- [Autenticação](#-autenticação)
-- [Componentes Principais](#-componentes-principais)
+- [Padrões e Arquitetura](#-padrões-e-arquitetura)
+- [Instalação e Setup](#-instalação-e-setup)
+- [Desenvolvimento](#-desenvolvimento)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Documentação](#-documentação)
+- [Deploy e CI/CD](#-deploy-e-cicd)
 - [Troubleshooting](#-troubleshooting)
-- [Contribuindo](#-contribuindo)
 
 ## 🎯 Sobre o Projeto
 
-SmartPicks é uma aplicação web moderna que oferece recomendações inteligentes através de uma interface amigável e responsiva. Construída com as melhores práticas de desenvolvimento frontend.
+SmartPicks é uma plataforma completa para criação e compartilhamento de palpites de apostas, oferecendo:
 
-### Tecnologias Principais
+- **Sistema de Autenticação** completo com JWT
+- **Upload de Imagens** para palpites com preview
+- **Interface Responsiva** para desktop e mobile
+- **Dashboard Administrativo** para gestão
+- **API RESTful** integrada com backend Go
+- **Deploy Automatizado** com GitHub Actions
 
-- **Framework UI**: Quasar Framework v2.18.5
-- **Framework JavaScript**: Vue 3 (Composition API)
-- **Linguagem**: TypeScript (strict mode)
-- **Gerenciamento de Estado**: Pinia
-- **Roteamento**: Vue Router com guards personalizados
-- **HTTP Client**: Axios com interceptors
-- **Notificações**: Vue3-Toastify
-- **Build Tool**: Vite
-- **Linting**: ESLint 9
-- **Internacionalização**: Vue I18n
+### 🛠️ Stack Tecnológica
 
-### Fluxo de Autenticação Detalhado
+**Frontend:**
 
-1. **Acesso Inicial** → Guard `initializeAuth` valida token no localStorage
-2. **Login** → `POST /auth/login` → Token + User salvos → Redirect `/dashboard`
-3. **Cadastro** → `POST /auth/cadastro` → Mensagem de sucesso → Redirect `/login`
-4. **Dashboard** → Guard `requireAuth` valida autenticação → Mostra conteúdo
-5. **Logout** → Limpa state + localStorage → Redirect `/login`
+- Vue 3 (Composition API) + TypeScript
+- Quasar Framework v2.18.5 (UI Components)
+- Pinia (State Management)
+- Vue Router (Routing + Guards)
+- Axios (HTTP Client)
+- SCSS (Styling)
 
-### Fluxo de Guards (Router)
+**Backend:**
 
-```
-Navegação Iniciada
-    ↓
-initializeAuth (global)
-    ↓
-requireAuth (rotas protegidas) OU requireGuest (login/cadastro)
-    ↓
-Componente Renderizado
-```
+- Go + Gin Framework
+- PostgreSQL (Neon)
+- JWT Authentication
+- File Upload
+- Vercel Deployment
 
-## 🏗️ Arquitetura
+**DevOps:**
 
-### Camadas da Aplicação
+- Firebase Hosting (Frontend)
+- Vercel (Backend)
+- GitHub Actions (CI/CD)
+- ESLint + Prettier (Code Quality)
+
+## �️ Padrões e Arquitetura
+
+### Padrões de Desenvolvimento Implementados
+
+- **Composition API First**: Vue 3 com `<script setup>` e TypeScript
+- **Design System**: Sistema de cores, espaçamentos e componentes padronizados
+- **Utility Classes**: Classes utilitárias para layouts e estilização
+- **TypeScript Strict**: Tipagem rigorosa em todo o projeto
+- **Code Quality**: ESLint + Prettier + EditorConfig
+- **Semantic Commit**: Convenções de commit padronizadas
+- **Component Architecture**: Componentes reutilizáveis e bem estruturados
+
+### Arquitetura da Aplicação
 
 ```
 ┌─────────────────────────────────────┐
-│         Components (UI)              │
-│  Componentes Vue reutilizáveis       │
+│         Pages (Views)                │
+│  LoginPage, Dashboard, AdminPanel    │
 └─────────────────────────────────────┘
                  ↓
 ┌─────────────────────────────────────┐
-│       Pages (Views)                  │
-│  LoginPage, CadastroPage, Dashboard  │
+│       Components (UI)                │
+│  AppHeader, ModalPalpite, UserAvatar │
 └─────────────────────────────────────┘
                  ↓
 ┌─────────────────────────────────────┐
-│      Router + Guards                 │
-│  Proteção de rotas e navegação       │
+│      Composables (Logic)             │
+│  useApi, useNotifications, useAuth   │
 └─────────────────────────────────────┘
                  ↓
 ┌─────────────────────────────────────┐
 │      Store (Pinia)                   │
-│  Estado global da aplicação          │
+│  Estado global + persistência        │
 └─────────────────────────────────────┘
                  ↓
 ┌─────────────────────────────────────┐
 │      API Layer (Axios)               │
-│  Comunicação com backend             │
+│  Interceptors + Error Handling       │
 └─────────────────────────────────────┘
 ```
 
-### Padrões Utilizados
+### Fluxo de Autenticação
 
-- **Composition API**: Lógica reutilizável e tipagem forte
-- **Store Modules**: Separação de concerns (auth, etc.)
-- **Route Guards**: Proteção de rotas com validação assíncrona
-- **Utility Classes**: Quasar classes para estilização
-- **Error Handling**: Tratamento centralizado com toast notifications
-- **Type Safety**: TypeScript strict mode em toda aplicação
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant L as LoginPage
+    participant S as AuthStore
+    participant A as API
+    participant D as Dashboard
 
-## 🚀 Instalação
+    U->>L: Insere credenciais
+    L->>S: login(credentials)
+    S->>A: POST /auth/login
+    A-->>S: {token, user}
+    S->>S: setToken + setUser
+    S-->>L: success
+    L->>D: router.push('/dashboard')
+```
+
+### Sistema de Rotas e Guards
+
+- **initializeAuth**: Valida token existente no localStorage
+- **requireAuth**: Protege rotas que precisam de autenticação
+- **requireGuest**: Redireciona usuários logados (login/cadastro)
+- **adminOnly**: Acesso exclusivo para administradores
+
+## 🚀 Instalação e Setup
 
 ### Pré-requisitos
 
@@ -185,81 +209,178 @@ quasar new component NomeDoComponente
 quasar new page NomeDaPagina
 ```
 
-## 📁 Estrutura de Pastas
+## 📁 Estrutura do Projeto
 
 ```
-smartPicks/
-├── public/                    # Arquivos estáticos
-│   └── icons/                 # Ícones da aplicação
-├── src/
-│   ├── assets/                # Recursos estáticos (imagens, etc.)
-│   ├── boot/                  # Arquivos de boot do Quasar
-│   │   ├── axios.ts           # Configuração Axios (baseURL, withCredentials)
-│   │   ├── i18n.ts            # Configuração internacionalização
-│   │   └── toastify.ts        # Configuração toast notifications
-│   ├── components/            # Componentes reutilizáveis
-│   │   └── Header.vue     # Layout principal (header condicional)
-│   │   └── UseAvatar.vue     # Layout principal (header condicional)
-│   ├── css/                   # Estilos globais
-│   │   ├── app.scss           # Estilos customizados
-│   │   └── quasar.variables.scss
-│   ├── i18n/                  # Traduções
-│   │   └── en-US/             # Inglês (padrão)
-│   ├── pages/                 # Páginas/Views
-│   │   ├── LoginPage.vue      # Página de login
-│   │   ├── CadastroPage.vue   # Página de cadastro
+smartpicks-frontend/
+├── 📁 public/                 # Arquivos estáticos
+│   ├── favicon.ico
+│   └── icons/                 # Logos e ícones da aplicação
+├── 📁 src/
+│   ├── 📁 boot/               # Inicialização Quasar
+│   │   ├── axios.ts           # Cliente HTTP + interceptors
+│   │   ├── icons.ts           # Ícones do projeto
+│   │   └── toastify.ts        # Sistema de notificações
+│   ├── 📁 components/         # Componentes reutilizáveis
+│   │   ├── AppHeader.vue      # Header com navegação
+│   │   ├── ModalPalpite.vue   # Modal criação de palpites
+│   │   └── UserAvatar.vue     # Avatar do usuário
+│   ├── 📁 composables/        # Lógica reutilizável
+│   │   ├── useApi.ts          # HTTP client abstraction
+│   │   └── useNotifications.ts # Sistema de notificações
+│   ├── 📁 constants/          # Constantes da aplicação
+│   │   └── index.ts           # URLs, configs, enums
+│   ├── 📁 css/                # Estilos e design system
+│   │   ├── app.scss           # Estilos base + utilitários
+│   │   ├── utilities.scss     # Classes utilitárias
+│   │   └── quasar.variables.scss # Design tokens
+│   ├── 📁 pages/              # Páginas/Views da aplicação
+│   │   ├── LoginPage.vue      # Autenticação
+│   │   ├── CadastroPage.vue   # Registro de usuários
 │   │   ├── DashboardPage.vue  # Dashboard principal
+│   │   ├── AdminDashboard.vue # Painel administrativo
+│   │   ├── AcessoNegado.vue   # Página de acesso negado
 │   │   └── ErrorNotFound.vue  # Página 404
-│   ├── router/                # Configuração de rotas
-│   │   ├── index.ts           # Setup do router
-│   │   ├── routes.ts          # Definição de rotas
-│   │   └── guards.ts          # Guards de navegação
-│   ├── stores/                # Stores Pinia
-│   │   ├── index.ts           # Setup do Pinia
+│   ├── 📁 router/             # Sistema de roteamento
+│   │   ├── index.ts           # Configuração Vue Router
+│   │   ├── routes.ts          # Definição das rotas
+│   │   └── guards.ts          # Guards de autenticação
+│   ├── 📁 stores/             # Estado global (Pinia)
+│   │   ├── index.ts           # Configuração Pinia
 │   │   └── auth.ts            # Store de autenticação
-│   ├── utils/                 # Utilitários
-│   │   └── sanitization.ts    # Funções de sanitização
+│   ├── 📁 types/              # Definições TypeScript
+│   │   └── index.ts           # Interfaces e tipos
+│   ├── 📁 utils/              # Utilitários
+│   │   ├── sanitization.ts    # Sanitização de dados
+│   │   └── validation.ts      # Validações de formulário
 │   ├── App.vue                # Componente raiz
 │   └── env.d.ts               # Declarações TypeScript
-├── eslint.config.js           # Configuração ESLint
-├── tsconfig.json              # Configuração TypeScript
-├── quasar.config.ts           # Configuração Quasar
-└── package.json               # Dependências do projeto
+├── 📄 .editorconfig           # Configuração editor
+├── 📄 .prettierrc.json        # Formatação de código
+├── 📄 eslint.config.js        # Linting e qualidade
+├── 📄 quasar.config.ts        # Configuração Quasar
+├── 📄 tsconfig.json           # Configuração TypeScript
+├── 📄 STYLE-GUIDE.md          # Guia de estilos frontend
+└── 📄 BACKEND-STANDARDS.md    # Padrões do backend
 ```
 
-## 🛠️ Guia de Desenvolvimento
+## � Desenvolvimento
 
-### Criando uma Nova Página
+### Scripts Disponíveis
 
-1. **Criar componente** em `src/pages/`:
+```bash
+# Desenvolvimento com hot-reload
+npm run dev
+
+# Build para produção
+npm run build
+
+# Preview da build de produção
+npm run preview
+
+# Linting e correção
+npm run lint
+npm run lint:fix
+
+# Type checking
+npm run type-check
+```
+
+### Padrões de Desenvolvimento
+
+#### Componentes Vue
+
+```vue
+<!-- Padrão: Composition API + TypeScript -->
+<template>
+  <div class="meu-componente">
+    <q-card class="elevation-2">
+      <q-card-section>
+        <h6 class="text-h6 text-primary">{{ titulo }}</h6>
+      </q-card-section>
+    </q-card>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Interfaces locais
+interface Props {
+  titulo: string;
+  opcional?: boolean;
+}
+
+// Props tipadas
+const props = withDefaults(defineProps<Props>(), {
+  opcional: false,
+});
+
+// Emits tipados
+const emit = defineEmits<{
+  click: [id: string];
+  update: [value: any];
+}>();
+
+// Estado reativo
+const loading = ref(false);
+
+// Computadas
+const cssClasses = computed(() => ({
+  'is-loading': loading.value,
+}));
+
+// Métodos
+const handleClick = () => {
+  emit('click', 'exemplo');
+};
+</script>
+
+<style lang="scss" scoped>
+.meu-componente {
+  // Use variáveis do design system
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+}
+</style>
+```
+
+#### Páginas
 
 ```vue
 <template>
-  <q-page class="flex flex-center">
-    <h1>Minha Nova Página</h1>
+  <q-page class="page-container">
+    <app-header titulo="Minha Página" />
+
+    <div class="content-area">
+      <!-- Conteúdo -->
+    </div>
   </q-page>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useNotifications } from 'src/composables/useNotifications';
 
-export default defineComponent({
-  name: 'MinhaNovaPage',
-  setup() {
-    return {};
-  },
+// Composables
+const { showSuccess, showError } = useNotifications();
+
+// Estado
+const dados = ref([]);
+
+// Lifecycle
+onMounted(async () => {
+  await carregarDados();
 });
+
+// Actions
+const carregarDados = async () => {
+  try {
+    // lógica
+    showSuccess('Sucesso!');
+  } catch (error) {
+    showError('Erro!');
+  }
+};
 </script>
-```
-
-2. **Adicionar rota** em `src/router/routes.ts`:
-
-```typescript
-{
-  path: '/minha-pagina',
-  component: () => import('pages/MinhaNovaPage.vue'),
-  meta: { requiresAuth: true }, // se precisar de autenticação
-}
 ```
 
 ### Adicionando um Guard
@@ -442,44 +563,103 @@ Header condicional que aparece apenas quando usuário está autenticado:
 - Indicador de perfil (Admin/Usuário)
 - Design minimalista com Quasar utilities
 
+## � Documentação
+
+### Documentos de Referência
+
+- **[STYLE-GUIDE.md](./STYLE-GUIDE.md)**: Padrões de código e convenções
+- **[BACKEND-STANDARDS.md](./BACKEND-STANDARDS.md)**: Padrões para API Go
+- **[BRANCH-WORKFLOW.md](./BRANCH-WORKFLOW.md)**: Fluxo de trabalho Git
+
+### Arquivos de Configuração
+
+- **`.editorconfig`**: Formatação consistente entre editores
+- **`.prettierrc.json`**: Formatação automática de código
+- **`eslint.config.js`**: Regras de linting para qualidade
+- **`tsconfig.json`**: Configuração TypeScript strict
+
+### Design System
+
+O projeto utiliza um design system baseado no Quasar com:
+
+- **Cores**: Sistema de cores semânticas e neutras
+- **Espaçamentos**: Escala harmônica de espaçamentos
+- **Tipografia**: Hierarquia tipográfica consistente
+- **Componentes**: Componentes padronizados e reutilizáveis
+- **Utilitários**: Classes CSS para layouts e estilização
+
+## 🚀 Deploy e CI/CD
+
+### Deploy Frontend (Firebase)
+
+```bash
+# Build para produção
+npm run build
+
+# Deploy para Firebase
+npm run deploy
+```
+
+### Deploy Backend (Vercel)
+
+O backend Go é automaticamente deployado no Vercel através de:
+
+- **Push para main**: Deploy automático
+- **Pull Requests**: Deploy de preview
+- **Environment Variables**: Configuradas no dashboard Vercel
+
+### GitHub Actions
+
+O projeto utiliza workflows automatizados para:
+
+- **Lint e Type Check**: Validação de código
+- **Build Testing**: Teste de builds
+- **Deploy Staging**: Deploy automático para staging
+- **Deploy Production**: Deploy manual para produção
+
 ## 🐛 Troubleshooting
 
-### Problema: Login retorna 200 mas não redireciona
+### Problemas Comuns
 
-**Solução**: Verificar se formulário tem `@submit.prevent`:
+#### 1. Token JWT Inválido
 
-```vue
-<form @submit.prevent="handleLogin"></form>
+```bash
+# Limpar localStorage
+localStorage.clear()
+
+# Verificar validade do token
+console.log(jwt_decode(token))
 ```
 
-### Problema: Token inválido mesmo após login
+#### 2. CORS Issues
 
-**Solução**: Verificar ordem dos guards no router:
+Verificar configuração axios em `src/boot/axios.ts`:
 
 ```typescript
-// Correto: initializeAuth antes de outras guards
-router.beforeEach(initializeAuth);
-router.beforeEach(requireAuth);
+api.defaults.withCredentials = true;
+api.defaults.baseURL = 'https://sua-api.vercel.app';
 ```
 
-### Problema: Header aparece em páginas de login
+#### 3. Build Failures
 
-**Solução**: Header.vue deve ter `v-if`:
+```bash
+# Limpar cache
+npm run clean
+rm -rf node_modules
+npm install
 
-```vue
-<q-header v-if="authStore.isAuthenticated"></q-header>
+# Type check
+npm run type-check
 ```
 
-### Problema: Erros do backend não aparecem
+#### 4. Quasar Components não funcionam
 
-**Solução**: Verificar estrutura do catch:
+Verificar se os componentes estão registrados em `quasar.config.ts`:
 
 ```typescript
-try {
-  await api.post('/endpoint');
-} catch (error: any) {
-  const errorMessages = extractErrorMessages(error);
-  errorMessages.forEach((msg) => toast.error(msg));
+framework: {
+  components: ['QBtn', 'QInput', 'QCard']
+}
 }
 ```
 
@@ -563,22 +743,71 @@ test: adiciona ou corrige testes
 chore: tarefas de manutenção
 ```
 
-## 📄 Licença
+---
 
-Este projeto está sob licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+## 🤝 Contribuindo
 
-## 👥 Time
+### Como Contribuir
 
-- **Desenvolvedor Principal**: Adrian Resende
+1. **Fork** o repositório
+2. **Crie** uma branch para sua feature: `git checkout -b feature/nova-feature`
+3. **Commit** suas mudanças: `git commit -m 'feat: adiciona nova feature'`
+4. **Push** para a branch: `git push origin feature/nova-feature`
+5. **Abra** um Pull Request
 
-## 🔗 Links Úteis
+### Convenções de Commit
 
-- [Documentação Quasar](https://quasar.dev/)
-- [Vue 3 Documentation](https://vuejs.org/)
-- [Pinia Documentation](https://pinia.vuejs.org/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Vue Router](https://router.vuejs.org/)
+Utilizamos [Conventional Commits](https://www.conventionalcommits.org/):
+
+```bash
+feat: nova funcionalidade
+fix: correção de bug
+docs: atualização de documentação
+style: formatação, missing semi colons, etc
+refactor: refatoração de código
+test: adição de testes
+chore: atualização de build, deps, etc
+```
+
+### Code Review
+
+- ✅ Código segue os padrões estabelecidos
+- ✅ Testes passam (se aplicável)
+- ✅ Documentação atualizada
+- ✅ Performance não foi impactada
+- ✅ Acessibilidade mantida
 
 ---
 
-⭐ **Feito com Vue 3 + Quasar Framework**
+## 📞 Suporte
+
+### Links Úteis
+
+- [Documentação Vue 3](https://vuejs.org/guide/)
+- [Documentação Quasar](https://quasar.dev/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Pinia Documentation](https://pinia.vuejs.org/)
+
+### Contato
+
+- **Desenvolvedor**: Adrian Resende
+- **GitHub**: [@AdrianResende](https://github.com/AdrianResende)
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença [MIT](LICENSE).
+
+---
+
+<div align="center">
+  <p>
+    Feito com ❤️ e ☕ por 
+    <a href="https://github.com/AdrianResende">Adrian Resende</a>
+  </p>
+  
+  <p>
+    <strong>SmartPicks</strong> - Apostas Inteligentes 🧠⚽
+  </p>
+</div>

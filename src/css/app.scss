@@ -1,5 +1,11 @@
+// SMARTPICKS GLOBAL STYLES
+// ========================================
+
 // Importar fonte Inter do Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+// Importar utilities
+@import './utilities.scss';
 
 // Definir fonte Inter para elementos de texto
 body,
@@ -41,7 +47,35 @@ label {
   min-height: 100vh;
 }
 
-/* Evita fundo cinza padrão do Quasar por trás das páginas */
+// Global Layout Styles
+.q-page {
+  min-height: 100vh;
+}
+
 .q-page-container {
   background: transparent !important;
+}
+
+// Global Animation Classes
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Scrollbar Styling
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $grey-2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $grey-4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $grey-6;
 }
