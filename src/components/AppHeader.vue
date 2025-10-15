@@ -3,13 +3,11 @@
     <q-header v-if="authStore.isAuthenticated" elevated class="bg-white text-dark"
       style="height: 80px; min-height: 80px">
       <q-toolbar class="AppHeader-toolbar">
-        <!-- Logo Section -->
         <div class="AppHeader-logo-section">
           <img src="/icons/LogoSmart.png" alt="SmartPicks Logo" class="AppHeader-logo" />
           <img src="/icons/NameSmart.png" alt="SmartPicks Nome" class="AppHeader-name gt-xs" />
         </div>
 
-        <!-- Search Section -->
         <div class="AppHeader-search-container gt-sm">
           <q-input dense rounded debounce="300" v-model="searchQuery" placeholder="Buscar..." class="AppHeader-search"
             bg-color="white" outlined>
@@ -19,23 +17,18 @@
           </q-input>
         </div>
 
-        <!-- Actions Section -->
         <div class="AppHeader-actions">
-          <!-- Search icon for mobile -->
           <q-btn class="lt-md q-mr-sm" flat round color="primary" icon="search" size="md"
             @click="showSearchModal = true">
             <q-tooltip>Buscar</q-tooltip>
           </q-btn>
 
-          <!-- Avatar -->
           <UserAvatar :size="$q.screen.lt.sm ? '35px' : '40px'" />
 
-          <!-- Welcome text -->
           <span class="AppHeader-welcome gt-sm">
             Olá, {{ userName }}!
           </span>
 
-          <!-- New bet button -->
           <q-btn class="AppHeader-new-bet gt-sm" rounded color="primary" label="Novo Palpite" no-caps icon="add"
             unelevated @click="dialog = true" />
 
@@ -44,7 +37,6 @@
             <q-tooltip>Novo Palpite</q-tooltip>
           </q-btn>
 
-          <!-- Logout button -->
           <q-btn class="AppHeader-logout gt-xs" unelevated rounded color="negative" text-color="white" icon="logout"
             label="Sair" :loading="loggingOut" @click="onLogout" no-caps>
           </q-btn>
@@ -62,7 +54,6 @@
     </q-page-container>
   </q-layout>
 
-  <!-- Modal de Pesquisa para Mobile -->
   <q-dialog v-model="showSearchModal" position="top">
     <q-card class="AppHeader-search-modal">
       <q-card-section class="q-pa-md">
@@ -118,7 +109,6 @@ const onNovoPalpite = (dados: { titulo: string; linkAposta: string; imagem: File
 const performSearch = () => {
   if (mobileSearchQuery.value.trim()) {
     console.log('Pesquisando por:', mobileSearchQuery.value);
-    // Aqui você pode implementar a lógica de pesquisa
     showSearchModal.value = false;
     mobileSearchQuery.value = '';
   }
@@ -126,7 +116,6 @@ const performSearch = () => {
 </script>
 
 <style scoped>
-/* Toolbar responsivo */
 .AppHeader-toolbar {
   display: flex;
   align-items: center;
@@ -137,7 +126,6 @@ const performSearch = () => {
   gap: 8px;
 }
 
-/* Logo Section */
 .AppHeader-logo-section {
   display: flex;
   align-items: center;
@@ -160,7 +148,6 @@ const performSearch = () => {
   flex-shrink: 0;
 }
 
-/* Search Section */
 .AppHeader-search-container {
   flex: 1;
   display: flex;
@@ -184,7 +171,6 @@ const performSearch = () => {
   box-shadow: 0 0 5px rgba(33, 150, 243, 0.25);
 }
 
-/* Actions Section */
 .AppHeader-actions {
   display: flex;
   align-items: center;
@@ -215,7 +201,6 @@ const performSearch = () => {
   margin: 0 4px;
 }
 
-/* Responsividade */
 @media (max-width: 1200px) {
   .AppHeader-search-container {
     max-width: 350px;
@@ -318,7 +303,6 @@ const performSearch = () => {
   }
 }
 
-/* Animações */
 .q-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -327,7 +311,6 @@ const performSearch = () => {
   transform: translateY(-1px);
 }
 
-/* Modal de Pesquisa Mobile */
 .AppHeader-search-modal {
   width: 90vw;
   max-width: 400px;
