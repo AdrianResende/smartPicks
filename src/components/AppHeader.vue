@@ -22,7 +22,8 @@
         <!-- Actions Section -->
         <div class="AppHeader-actions">
           <!-- Search icon for mobile -->
-          <q-btn class="lt-md q-mr-sm" flat round color="primary" icon="search" size="md" @click="showSearchModal = true">
+          <q-btn class="lt-md q-mr-sm" flat round color="primary" icon="search" size="md"
+            @click="showSearchModal = true">
             <q-tooltip>Buscar</q-tooltip>
           </q-btn>
 
@@ -35,20 +36,21 @@
           </span>
 
           <!-- New bet button -->
-          <q-btn class="AppHeader-new-bet gt-sm" rounded color="primary" label="Novo Palpite" no-caps icon="add" unelevated
-            @click="dialog = true" />
+          <q-btn class="AppHeader-new-bet gt-sm" rounded color="primary" label="Novo Palpite" no-caps icon="add"
+            unelevated @click="dialog = true" />
 
-          <q-btn class="AppHeader-new-bet-mobile lt-md" flat round color="primary" icon="add" size="md" @click="dialog = true">
+          <q-btn class="AppHeader-new-bet-mobile lt-md" flat round color="primary" icon="add" size="md"
+            @click="dialog = true">
             <q-tooltip>Novo Palpite</q-tooltip>
           </q-btn>
 
           <!-- Logout button -->
-          <q-btn class="AppHeader-logout gt-xs" unelevated rounded color="negative" text-color="white" icon="logout" label="Sair"
-            :loading="loggingOut" @click="onLogout" no-caps>
+          <q-btn class="AppHeader-logout gt-xs" unelevated rounded color="negative" text-color="white" icon="logout"
+            label="Sair" :loading="loggingOut" @click="onLogout" no-caps>
           </q-btn>
 
-          <q-btn class="AppHeader-logout-mobile lt-sm" flat round color="negative" icon="logout" size="md" :loading="loggingOut"
-            @click="onLogout">
+          <q-btn class="AppHeader-logout-mobile lt-sm" flat round color="negative" icon="logout" size="md"
+            :loading="loggingOut" @click="onLogout">
             <q-tooltip>Sair</q-tooltip>
           </q-btn>
         </div>
@@ -64,16 +66,8 @@
   <q-dialog v-model="showSearchModal" position="top">
     <q-card class="AppHeader-search-modal">
       <q-card-section class="q-pa-md">
-        <q-input
-          v-model="mobileSearchQuery"
-          placeholder="Buscar..."
-          autofocus
-          outlined
-          rounded
-          dense
-          @keyup.enter="performSearch"
-          @keyup.esc="showSearchModal = false"
-        >
+        <q-input v-model="mobileSearchQuery" placeholder="Buscar..." autofocus outlined rounded dense
+          @keyup.enter="performSearch" @keyup.esc="showSearchModal = false">
           <template v-slot:prepend>
             <q-icon name="search" color="primary" />
           </template>
@@ -227,7 +221,7 @@ const performSearch = () => {
     max-width: 350px;
     margin: 0 16px;
   }
-  
+
   .AppHeader-welcome {
     font-size: 13px;
     margin: 0 8px;
@@ -239,13 +233,13 @@ const performSearch = () => {
     width: 150px;
     height: 50px;
   }
-  
+
   .AppHeader-name {
     width: 150px;
     height: 50px;
     margin-left: -3.8em;
   }
-  
+
   .AppHeader-search-container {
     margin: 0 12px;
   }
@@ -256,18 +250,18 @@ const performSearch = () => {
     padding: 0 12px;
     gap: 6px;
   }
-  
+
   .AppHeader-logo {
     width: 120px;
     height: 40px;
   }
-  
+
   .AppHeader-name {
     width: 120px;
     height: 40px;
     margin-left: -3em;
   }
-  
+
   .AppHeader-actions {
     gap: 6px;
   }
@@ -278,18 +272,18 @@ const performSearch = () => {
     padding: 0 8px;
     gap: 4px;
   }
-  
+
   .AppHeader-logo {
     width: 100px;
     height: 35px;
   }
-  
+
   .AppHeader-name {
     width: 100px;
     height: 35px;
     margin-left: -2.5em;
   }
-  
+
   .AppHeader-actions {
     gap: 4px;
   }
@@ -300,7 +294,7 @@ const performSearch = () => {
     width: 80px;
     height: 30px;
   }
-  
+
   .AppHeader-name {
     width: 80px;
     height: 30px;
@@ -312,14 +306,15 @@ const performSearch = () => {
   .AppHeader-toolbar {
     padding: 0 4px;
   }
-  
+
   .AppHeader-logo {
     width: 70px;
     height: 25px;
   }
-  
+
   .AppHeader-name {
-    display: none; /* Esconder nome em telas muito pequenas */
+    display: none;
+    /* Esconder nome em telas muito pequenas */
   }
 }
 
@@ -338,14 +333,14 @@ const performSearch = () => {
   max-width: 400px;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  
+
   .q-card-section {
     padding: 16px;
   }
-  
+
   .q-input {
     width: 100%;
-    
+
     .q-field__control {
       border-radius: 25px;
     }
