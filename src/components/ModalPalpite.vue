@@ -23,21 +23,21 @@
           Imagem da BET*:
         </div>
         <div class="text-center q-mb-md">
-          <div class="q-mb-md">
+          <div v-if="!imagemPreview" class="q-mb-md">
             <q-file v-model="imagemPalpite" outlined accept="image/*" label="Adicionar imagem" class="upload-input"
-              @input="onImageUpload">
+              @update:model-value="onImageUpload">
               <template v-slot:prepend>
                 <q-icon name="cloud_upload" />
               </template>
             </q-file>
           </div>
 
-          <q-separator></q-separator>
-
-          <div v-if="imagemPreview" class="image-preview-clean q-mt-md">
+          <div v-if="imagemPreview" class="image-preview-clean">
             <img :src="imagemPreview" alt="Preview do palpite" class="preview-img-large" />
             <q-btn flat round icon="close" size="sm" class="remove-image-btn-simple" @click="removerImagem" />
           </div>
+
+          <q-separator></q-separator>
         </div>
 
         <div class="q-mb-sm text-grey-8 text-left">
@@ -102,16 +102,21 @@ watch(() => props.show, (novoValor) => {
   }
 });
 
-
-const onImageUpload = (file: File) => {
-  if (file) {
-    imagemPalpite.value = file;
+watch(imagemPalpite, (novaImagem) => {
+  if (novaImagem) {
     const reader = new FileReader();
     reader.onload = (e) => {
       imagemPreview.value = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(novaImagem);
+  } else {
+    imagemPreview.value = null;
   }
+});
+
+
+const onImageUpload = (file: File | null) => {
+  imagemPalpite.value = file;
 };
 
 const removerImagem = () => {
@@ -207,6 +212,7 @@ const enviarPalpite = async () => {
 .upload-input {
   max-width: 300px;
   margin: 0 auto;
+  transition: all 0.3s ease;
 }
 
 .image-preview-clean {
@@ -214,6 +220,19 @@ const enviarPalpite = async () => {
   display: inline-block;
   max-width: 100%;
   width: 100%;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .preview-img-large {
@@ -223,19 +242,24 @@ const enviarPalpite = async () => {
   min-height: 200px;
   object-fit: cover;
   border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .remove-image-btn-simple {
   position: absolute;
   top: 8px;
   right: 8px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .remove-image-btn-simple:hover {
-  background-color: rgba(255, 0, 0, 0.8);
+  background-color: rgba(244, 67, 54, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
 }
 
 /* Responsividade */
