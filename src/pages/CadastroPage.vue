@@ -1,89 +1,104 @@
 <template>
-  <q-page class="flex flex-center bg-gradient-to-br from-primary to-info">
-    <div class="row full-width justify-center items-center q-pa-lg q-gutter-lg">
-      <!-- Seção da Logo -->
-      <div class="col-4 flex flex-center">
-        <div class="text-center">
-          <img src="icons/LogoSmartFull.png" alt="SmartPicks Logo" class="logo-responsive" />
+  <q-page class="cadastro-page">
+    <div class="cadastro-wrapper">
+      <div class="logo-section">
+        <div class="logo-container">
+          <img src="icons/LogoSmartFull.png" class="main-logo" />
         </div>
       </div>
-
-      <!-- Seção do Formulário -->
-      <div class="col-7 flex flex-center">
-        <q-card class="cadastro-card q-pa-md" flat bordered>
-          <q-card-section class="text-center q-pb-2">
-            <div class="text-h4 text-weight-bold text-primary q-mb-sm">Crie sua conta!</div>
+      <div class="cadastro-card-wrapper">
+        <q-card class="cadastro-card" flat>
+          <q-card-section class="card-header">
+            <div class="welcome-text">
+              <h2 class="welcome-title">Crie sua conta!</h2>
+            </div>
           </q-card-section>
 
-          <q-card-section class="q-pt-md">
-            <q-form ref="formRef" @submit.prevent="onSubmit" class="column">
-              <q-input v-model="nome" outlined rounded type="text" label="Nome completo"
-                :rules="[(val) => !!val || 'Campo obrigatório']" color="primary" label-color="grey-7" bg-color="grey-1"
-                class="q-mb-sm full-width">
-                <template v-slot:prepend>
-                  <q-icon name="person" color="grey-6" />
-                </template>
-              </q-input>
+          <q-card-section class="card-content">
+            <q-form ref="formRef" @submit.prevent="onSubmit" class="cadastro-form">
+              <div class="input-group">
+                <q-input v-model="nome" outlined type="text" label="Nome completo"
+                  :rules="[(val) => !!val || 'Campo obrigatório']" class="modern-input" size="lg" color="primary"
+                  label-color="grey-7" bg-color="grey-1">
+                  <template v-slot:prepend>
+                    <q-icon name="person" color="grey-6" />
+                  </template>
+                </q-input>
+              </div>
 
-              <q-input v-model="email" outlined rounded type="email" label="E-mail"
-                :rules="[(val) => !!val || 'Campo obrigatório']" color="primary" label-color="grey-7" bg-color="grey-1"
-                class="full-width">
-                <template v-slot:prepend>
-                  <q-icon name="mail" color="grey-6" />
-                </template>
-              </q-input>
+              <div class="input-group">
+                <q-input v-model="email" outlined type="email" label="E-mail"
+                  :rules="[(val) => !!val || 'Campo obrigatório']" class="modern-input" size="lg" color="primary"
+                  label-color="grey-7" bg-color="grey-1">
+                  <template v-slot:prepend>
+                    <q-icon name="mail" color="grey-6" />
+                  </template>
+                </q-input>
+              </div>
 
-              <q-input v-model="password" outlined rounded type="password" label="Senha"
-                :rules="[(val) => !!val || 'Campo obrigatório']" color="primary" label-color="grey-7" bg-color="grey-1"
-                class="full-width">
-                <template v-slot:prepend>
-                  <q-icon name="lock" color="grey-6" />
-                </template>
-              </q-input>
+              <div class="input-group">
+                <q-input v-model="password" outlined type="password" label="Senha"
+                  :rules="[(val) => !!val || 'Campo obrigatório']" class="modern-input" size="lg" color="primary"
+                  label-color="grey-7" bg-color="grey-1">
+                  <template v-slot:prepend>
+                    <q-icon name="lock" color="grey-6" />
+                  </template>
+                </q-input>
+              </div>
 
-              <q-input v-model="confirmPassword" outlined rounded type="password" label="Confirme a Senha"
-                :rules="[(val) => !!val || 'Campo obrigatório']" color="primary" label-color="grey-7" bg-color="grey-1"
-                class="full-width" :error="isPasswordMismatch" error-message="As senhas não conferem">
-                <template v-slot:prepend>
-                  <q-icon name="lock_outline" color="grey-6" />
-                </template>
-              </q-input>
+              <div class="input-group">
+                <q-input v-model="confirmPassword" outlined type="password" label="Confirme a Senha"
+                  :rules="[(val) => !!val || 'Campo obrigatório']" class="modern-input" size="lg" color="primary"
+                  label-color="grey-7" bg-color="grey-1" :error="isPasswordMismatch"
+                  error-message="As senhas não conferem">
+                  <template v-slot:prepend>
+                    <q-icon name="lock_outline" color="grey-6" />
+                  </template>
+                </q-input>
+              </div>
 
-              <q-input v-model="cpf" outlined rounded type="text" label="CPF" :rules="cpfRules" color="primary"
-                label-color="grey-7" bg-color="grey-1" mask="###.###.###-##" fill-mask class="full-width"
-                unmasked-value>
-                <template v-slot:prepend>
-                  <q-icon name="badge" color="grey-6" />
-                </template>
-              </q-input>
+              <div class="input-group">
+                <q-input v-model="cpf" outlined type="text" label="CPF" :rules="cpfRules" class="modern-input" size="lg"
+                  color="primary" label-color="grey-7" bg-color="grey-1" mask="###.###.###-##" fill-mask unmasked-value>
+                  <template v-slot:prepend>
+                    <q-icon name="badge" color="grey-6" />
+                  </template>
+                </q-input>
+              </div>
 
-              <q-input v-model="dataNascimento" outlined rounded type="text" label="Data de Nascimento"
-                :rules="dataNascimentoRules" color="primary" label-color="grey-7" bg-color="grey-1" class="full-width"
-                mask="##/##/####" fill-mask>
-                <template v-slot:prepend>
-                  <q-icon name="cake" color="grey-6" />
-                </template>
-              </q-input>
+              <div class="input-group">
+                <q-input v-model="dataNascimento" outlined type="text" label="Data de Nascimento"
+                  :rules="dataNascimentoRules" class="modern-input" size="lg" color="primary" label-color="grey-7"
+                  bg-color="grey-1" mask="##/##/####" fill-mask>
+                  <template v-slot:prepend>
+                    <q-icon name="cake" color="grey-6" />
+                  </template>
+                </q-input>
+              </div>
 
-              <q-select v-model="perfil" :options="perfilOptions" outlined rounded label="Tipo de Usuário"
-                :rules="[(val) => !!val || 'Campo obrigatório']" color="primary" label-color="grey-7" bg-color="grey-1"
-                class="full-width" emit-value map-options>
-                <template v-slot:prepend>
-                  <q-icon :name="perfil === 'admin' ? 'admin_panel_settings' : 'person'" color="grey-6" />
-                </template>
-              </q-select>
+              <div class="input-group">
+                <q-select v-model="perfil" :options="perfilOptions" outlined label="Tipo de Usuário"
+                  :rules="[(val) => !!val || 'Campo obrigatório']" class="modern-input" size="lg" color="primary"
+                  label-color="grey-7" bg-color="grey-1" emit-value map-options>
+                  <template v-slot:prepend>
+                    <q-icon :name="perfil === 'admin' ? 'admin_panel_settings' : 'person'" color="grey-6" />
+                  </template>
+                </q-select>
+              </div>
 
-              <q-btn type="submit" unelevated rounded color="primary" text-color="white" label="Cadastrar"
-                class="full-width q-py-md q-mt-md" :loading="isSubmitting" :disable="isSubmitDisabled" no-caps>
-                <template v-slot:loading>
-                  <q-spinner-hourglass class="on-left" />
-                  Cadastrando...
-                </template>
-              </q-btn>
+              <div class="action-group">
+                <q-btn type="submit" unelevated rounded color="primary" text-color="white" label="Cadastrar"
+                  class="cadastro-btn" size="lg" :loading="isSubmitting" :disable="isSubmitDisabled" no-caps>
+                  <template v-slot:loading>
+                    <q-spinner-hourglass class="on-left" />
+                    Cadastrando...
+                  </template>
+                </q-btn>
+              </div>
 
-              <div class="text-center q-mt-lg q-pt-md" style="border-top: 1px solid rgba(0, 0, 0, 0.1)">
-                <span class="text-grey-6">Já tem uma conta? </span>
-                <router-link to="/" class="text-primary text-weight-medium text-decoration-none">
+              <div class="signup-link">
+                <span class="signup-text">Já tem uma conta? </span>
+                <router-link to="/" class="signup-btn">
                   Faça login aqui
                 </router-link>
               </div>
@@ -298,15 +313,52 @@ const onSubmit = async () => {
 </script>
 
 <style scoped>
-.bg-gradient-to-br {
-  background: linear-gradient(135deg, #2ebac6 0%, #0582a6 100%);
+.cadastro-page {
   min-height: 100vh;
+  background: linear-gradient(135deg, #2ebac6 0%, #0582a6 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.logo-responsive {
+.cadastro-wrapper {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 4rem;
+  padding: 2rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Seção da Logo */
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.logo-container {
+  text-align: center;
+  color: white;
+}
+
+.main-logo {
   width: 280px;
   height: auto;
+  margin-bottom: 2rem;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+}
+
+/* Card de Cadastro */
+.cadastro-card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
 .cadastro-card {
@@ -314,7 +366,7 @@ const onSubmit = async () => {
   max-width: 480px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.1),
     0 8px 32px rgba(0, 0, 0, 0.08);
@@ -322,70 +374,151 @@ const onSubmit = async () => {
   overflow: hidden;
 }
 
-/* Layout sempre lado a lado */
-.row {
-  max-width: 1400px;
-  margin: 0 auto;
-  gap: 2rem;
+.card-header {
+  padding: 2.5rem 2.5rem 1rem 2.5rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(46, 186, 198, 0.05) 0%, rgba(5, 130, 166, 0.05) 100%);
 }
 
-/* Responsividade otimizada para layout horizontal */
-@media (min-width: 1025px) {
-  .logo-responsive {
-    width: 320px;
-  }
-
-  .cadastro-card {
-    max-width: 520px;
-  }
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f4c75;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.5px;
 }
 
-@media (max-width: 1024px) {
-  .logo-responsive {
-    width: 280px;
-  }
-
-  .cadastro-card {
-    max-width: 460px;
-  }
+.card-content {
+  padding: 1rem 2.5rem 2.5rem 2.5rem;
 }
 
-@media (max-width: 768px) {
-  .logo-responsive {
-    width: 220px;
-  }
-
-  .cadastro-card {
-    max-width: 380px;
-  }
-
-  .row {
-    gap: 1rem;
-  }
+.cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-@media (max-width: 480px) {
-  .logo-responsive {
-    width: 160px;
-  }
-
-  .cadastro-card {
-    max-width: 280px;
-  }
-
-  .row {
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
+.input-group {
+  position: relative;
 }
 
-/* Hover effects */
-.q-btn:hover {
+.modern-input {
+  border-radius: 16px;
+}
+
+.modern-input :deep(.q-field__control) {
+  border-radius: 16px;
+  height: 56px;
+}
+
+.modern-input :deep(.q-field__outlined) {
+  border-radius: 16px;
+}
+
+.action-group {
+  margin-top: 1rem;
+}
+
+.cadastro-btn {
+  width: 100%;
+  height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 16px;
+  text-transform: none;
+  transition: all 0.3s ease;
+}
+
+.cadastro-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(46, 186, 198, 0.4);
 }
 
-.text-decoration-none:hover {
-  text-decoration: underline !important;
+.signup-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.signup-text {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.signup-btn {
+  color: #2ebac6;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.signup-btn:hover {
+  color: #0582a6;
+  text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .cadastro-wrapper {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 2rem;
+  }
+
+  .main-logo {
+    width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cadastro-wrapper {
+    padding: 1.5rem;
+    gap: 2rem;
+  }
+
+  .main-logo {
+    width: 180px;
+    margin-bottom: 1rem;
+  }
+
+  .cadastro-card {
+    max-width: 100%;
+  }
+
+  .card-header {
+    padding: 2rem 2rem 0.5rem 2rem;
+  }
+
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+
+  .card-content {
+    padding: 1rem 2rem 2rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cadastro-wrapper {
+    padding: 1rem;
+  }
+
+  .main-logo {
+    width: 150px;
+  }
+
+  .card-header {
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  }
+
+  .card-content {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .welcome-title {
+    font-size: 1.4rem;
+  }
 }
 </style>
