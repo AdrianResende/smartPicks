@@ -125,7 +125,6 @@ const onSubmit = async () => {
   margin: 0 auto;
 }
 
-/* Seção da Logo */
 .logo-section {
   display: flex;
   align-items: center;
@@ -162,7 +161,6 @@ const onSubmit = async () => {
   text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Card de Login */
 .login-card-wrapper {
   display: flex;
   justify-content: center;
@@ -276,7 +274,6 @@ const onSubmit = async () => {
   text-decoration: underline;
 }
 
-/* Responsividade */
 @media (max-width: 1024px) {
   .login-wrapper {
     grid-template-columns: 1fr;
