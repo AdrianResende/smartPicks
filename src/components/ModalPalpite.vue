@@ -25,11 +25,14 @@
         <div class="text-center q-mb-md">
           <div v-if="!imagemPreview" class="q-mb-md">
             <q-file v-model="imagemPalpite" outlined accept="image/*" label="Adicionar imagem" class="upload-input"
-              @update:model-value="onImageUpload">
+              @update:model-value="onImageUpload" max-files="1" :max-file-size="5242880" @rejected="onFileRejected">
               <template v-slot:prepend>
                 <q-icon name="cloud_upload" />
               </template>
             </q-file>
+            <div class="text-caption text-grey-6 q-mt-xs">
+              Formatos: JPG, PNG, GIF, WebP (Máx: 5MB)
+            </div>
           </div>
 
           <div v-if="imagemPreview" class="image-preview-clean">
@@ -60,29 +63,28 @@
 import { ref, computed, watch } from 'vue';
 import { QDialog, QCard, QCardSection, QCardActions, QBtn, QInput, QSpace, QFile, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
-
+import { useAuthStore } from 'src/stores/auth';
 
 interface Props {
   show: boolean;
 }
 
 const props = defineProps<Props>();
-
-
 const emit = defineEmits<{
   (e: 'update:show', value: boolean): void;
   (e: 'close'): void;
+  (e: 'palpite-criado'): void;
 }>();
 
 const $q = useQuasar();
+const authStore = useAuthStore();
 
+const userId = computed(() => authStore.user?.id || 1);
 const tituloComentario = ref<string>('');
-const palpite = ref<number | null>(null);
 const linkAposta = ref<string>('');
 const imagemPalpite = ref<File | null>(null);
 const imagemPreview = ref<string | null>(null);
 const enviando = ref(false);
-
 
 const dialogVisible = computed({
   get: () => props.show,
@@ -96,7 +98,7 @@ const palpiteValido = computed(() => {
 watch(() => props.show, (novoValor) => {
   if (novoValor) {
     tituloComentario.value = '';
-    palpite.value = null;
+    linkAposta.value = '';
     imagemPalpite.value = null;
     imagemPreview.value = null;
   }
@@ -114,9 +116,21 @@ watch(imagemPalpite, (novaImagem) => {
   }
 });
 
-
 const onImageUpload = (file: File | null) => {
   imagemPalpite.value = file;
+};
+
+import type { QRejectedEntry } from 'quasar';
+
+const onFileRejected = (rejectedEntries: QRejectedEntry[]) => {
+  const entry = rejectedEntries[0];
+  if (entry) {
+    $q.notify({
+      type: 'negative',
+      message: `Arquivo rejeitado: ${entry.failedPropValidation}`,
+      position: 'top-right'
+    });
+  }
 };
 
 const removerImagem = () => {
@@ -139,27 +153,52 @@ const enviarPalpite = async () => {
     return;
   }
 
+  if (!userId.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Você precisa estar logado para criar um palpite',
+      position: 'top-right'
+    });
+    return;
+  }
+
   enviando.value = true;
 
   try {
     const formData = new FormData();
+    formData.append('image', imagemPalpite.value as File);
 
-    if (tituloComentario.value) {
-      formData.append('titulo', tituloComentario.value);
-    }
-    if (linkAposta.value) {
-      formData.append('linkAposta', linkAposta.value);
-    }
-    if (imagemPalpite.value) {
-      formData.append('imagem', imagemPalpite.value);
-    }
-
-
-    const response = await api.post('/palpites', formData, {
+    const uploadResponse = await api.post('/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
+      },
+      timeout: 30000
     });
+
+
+    if (!uploadResponse.data.success) {
+      throw new Error(uploadResponse.data.message || 'Erro no upload');
+    }
+
+    const imageUrl = uploadResponse.data.image_url;
+    console.log('Imagem uploadada com sucesso:', imageUrl);
+
+
+    const palpiteData: any = {
+      user_id: userId.value,
+      img_url: imageUrl
+    };
+
+
+    if (tituloComentario.value.trim() !== '') {
+      palpiteData.titulo = tituloComentario.value.trim();
+    }
+
+    if (linkAposta.value.trim() !== '') {
+      palpiteData.link = linkAposta.value.trim();
+    }
+
+    const response = await api.post('/palpites', palpiteData);
 
     if (response.status === 200 || response.status === 201) {
       fecharModal();
@@ -168,20 +207,36 @@ const enviarPalpite = async () => {
         message: 'Palpite criado com sucesso!',
         position: 'top-right'
       });
+      emit('palpite-criado');
     }
 
   } catch (error) {
+    console.error('Erro ao enviar palpite:', error);
 
     let mensagemErro = 'Erro ao enviar palpite. Tente novamente.';
 
     if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { status: number; data?: { message?: string } } };
+      const axiosError = error as {
+        response?: {
+          status: number;
+          data?: {
+            message?: string;
+            error?: string;
+          }
+        }
+      };
 
       if (axiosError.response?.status === 401) {
         mensagemErro = 'Você precisa estar logado para criar um palpite';
       } else if (axiosError.response?.status === 400) {
-        mensagemErro = axiosError.response.data?.message || 'Dados inválidos';
+        mensagemErro = axiosError.response.data?.message || axiosError.response.data?.error || 'Dados inválidos';
+      } else if (axiosError.response?.status === 413) {
+        mensagemErro = 'Arquivo muito grande. Máximo 5MB.';
+      } else if (axiosError.response?.status === 500) {
+        mensagemErro = 'Erro no servidor. Tente novamente mais tarde.';
       }
+    } else if (error instanceof Error) {
+      mensagemErro = error.message;
     }
 
     $q.notify({
@@ -263,7 +318,6 @@ const enviarPalpite = async () => {
   box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
 }
 
-/* Responsividade */
 @media (max-width: 480px) {
   .modal-palpite {
     width: 95vw;
