@@ -1,56 +1,31 @@
-// Quasar SCSS (& Sass) Variables
-// --------------------------------------------------
-// To customize the look and feel of this app, you can override
-// the Sass/SCSS variables found in Quasar's source Sass/SCSS files.
-
-// Check documentation for full list of Quasar variables
-
-// Your own variables (that are declared here) and Quasar's own
-// ones will be available out of the box in your .vue/.scss/.sass files
-
-// It's highly recommended to change the default colors
-// to match your app's branding.
-// Tip: Use the "Theme Builder" on Quasar's documentation website.
-
-// SMARTPICKS DESIGN SYSTEM
+// SMARTPICKS UTILITIES
 // ========================================
 
-// Typography
-$typography-font-family:
-  'Inter',
-  -apple-system,
-  BlinkMacSystemFont,
-  'Segoe UI',
-  Roboto,
-  sans-serif;
-
-// Brand Colors
-$primary: #2ebac6;
-$secondary: #0582a6;
-$accent: #00796b;
-
-// Status Colors
-$positive: #4caf50;
-$negative: #f44336;
-$info: #2196f3;
-$warning: #ff9800;
-
-// Neutral Colors
-$dark: #0f4c75;
-$dark-page: #1a1a1a;
-$grey-1: #fafafa;
-$grey-2: #f5f5f5;
-$grey-4: #e0e0e0;
-$grey-6: #757575;
-$grey-8: #424242;
-
-// Spacing Scale
-$space-xs: 4px;
-$space-sm: 8px;
-$space-md: 16px;
-$space-lg: 24px;
-$space-xl: 32px;
-$space-xxl: 48px;
+// Spacing Scale (mapa com x/y)
+$space-xs: (
+  x: 4px,
+  y: 4px,
+);
+$space-sm: (
+  x: 8px,
+  y: 8px,
+);
+$space-md: (
+  x: 16px,
+  y: 16px,
+);
+$space-lg: (
+  x: 24px,
+  y: 24px,
+);
+$space-xl: (
+  x: 32px,
+  y: 32px,
+);
+$space-xxl: (
+  x: 48px,
+  y: 48px,
+);
 
 // Border Radius
 $border-radius-xs: 4px;
@@ -69,7 +44,75 @@ $transition-fast: 0.15s ease;
 $transition-base: 0.3s ease;
 $transition-slow: 0.5s ease;
 
+// Colors
 $positive: #21ba45;
 $negative: #c10015;
 $info: #31ccec;
 $warning: #f2c037;
+
+// ========================================
+// 🔧 SMART UTILITIES MIXINS
+// ========================================
+
+// Mixin genérico que entende mapas de espaço (x/y) e valores simples
+@mixin space($property, $size) {
+  @if type-of($size) == 'map' {
+    #{$property}: map-get($size, y) map-get($size, x) !important;
+  } @else {
+    #{$property}: $size !important;
+  }
+}
+
+// ========================================
+// 🧱 EXEMPLOS DE UTILITÁRIOS GLOBAIS
+// ========================================
+
+// Exemplo: adicionar padding padrão para elementos
+.u-padding-xs {
+  @include space(padding, $space-xs);
+}
+
+.u-padding-sm {
+  @include space(padding, $space-sm);
+}
+
+.u-padding-md {
+  @include space(padding, $space-md);
+}
+
+.u-padding-lg {
+  @include space(padding, $space-lg);
+}
+
+.u-padding-xl {
+  @include space(padding, $space-xl);
+}
+
+.u-padding-xxl {
+  @include space(padding, $space-xxl);
+}
+
+// Margin utilitários
+.u-margin-xs {
+  @include space(margin, $space-xs);
+}
+
+.u-margin-sm {
+  @include space(margin, $space-sm);
+}
+
+.u-margin-md {
+  @include space(margin, $space-md);
+}
+
+.u-margin-lg {
+  @include space(margin, $space-lg);
+}
+
+.u-margin-xl {
+  @include space(margin, $space-xl);
+}
+
+.u-margin-xxl {
+  @include space(margin, $space-xxl);
+}
