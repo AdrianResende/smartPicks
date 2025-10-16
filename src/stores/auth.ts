@@ -310,7 +310,7 @@ export const useAuthStore = defineStore('auth', () => {
   const register = async (userData: {
     nome: string;
     email: string;
-    senha: string;
+    password: string;
     cpf: string;
     data_nascimento: string;
     perfil?: 'user' | 'admin';
@@ -321,7 +321,7 @@ export const useAuthStore = defineStore('auth', () => {
       const sanitizedData = {
         nome: sanitizeInput(userData.nome),
         email: sanitizeInput(userData.email),
-        senha: userData.senha,
+        password: userData.password,
         cpf: sanitizeInput(userData.cpf),
         data_nascimento: userData.data_nascimento,
         perfil: userData.perfil || 'user',

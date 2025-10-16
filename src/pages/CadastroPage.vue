@@ -294,7 +294,7 @@ const onSubmit = async () => {
     const success = await authStore.register({
       nome: nomeSeguro,
       email: emailSeguro,
-      senha: password.value,
+      password: password.value,
       cpf: cpfLimpo,
       data_nascimento: dataNascimentoISO,
       perfil: perfil.value as 'user' | 'admin',

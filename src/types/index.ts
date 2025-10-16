@@ -1,102 +1,102 @@
 // User Types
 export interface User {
-    id: number;
-    nome: string;
-    email: string;
-    perfil: 'user' | 'admin';
-    avatar?: string;
-    cpf?: string;
-    dataNascimento?: string;
-    createdAt?: string;
-    updatedAt?: string;
+  id: number;
+  nome: string;
+  email: string;
+  perfil: 'user' | 'admin';
+  avatar?: string;
+  cpf?: string;
+  dataNascimento?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Auth Types
 export interface LoginData {
-    email: string;
-    senha: string;
+  email: string;
+  password: string;
 }
 
 export interface RegisterData {
-    nome: string;
-    email: string;
-    senha: string;
-    cpf: string;
-    dataNascimento: string;
-    perfil: 'user' | 'admin';
+  nome: string;
+  email: string;
+  password: string;
+  cpf: string;
+  dataNascimento: string;
+  perfil: 'user' | 'admin';
 }
 
 export interface AuthResponse {
-    user: User;
-    token?: string;
+  user: User;
+  token?: string;
 }
 
 // Palpite Types
 export interface Palpite {
-    id: number;
-    titulo?: string;
-    linkAposta?: string;
-    imagem: string;
-    userId: number;
-    user?: Pick<User, 'id' | 'nome' | 'avatar'>;
-    createdAt: string;
-    updatedAt?: string;
+  id: number;
+  titulo?: string;
+  linkAposta?: string;
+  imagem: string;
+  userId: number;
+  user?: Pick<User, 'id' | 'nome' | 'avatar'>;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface CreatePalpiteData {
-    titulo?: string;
-    linkAposta?: string;
-    imagem: File;
+  titulo?: string;
+  linkAposta?: string;
+  imagem: File;
 }
 
 // API Response Types
 export interface ApiError {
-    message: string;
-    status?: number;
+  message: string;
+  status?: number;
 }
 
 export interface PaginatedResponse<T> {
-    data: T[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 // Form Types
 export interface FormField {
-    label: string;
-    type: 'text' | 'email' | 'password' | 'select' | 'file' | 'date';
-    rules?: Array<(val: string) => boolean | string>;
-    options?: Array<{ label: string; value: string }>;
+  label: string;
+  type: 'text' | 'email' | 'password' | 'select' | 'file' | 'date';
+  rules?: Array<(val: string) => boolean | string>;
+  options?: Array<{ label: string; value: string }>;
 }
 
 // Component Props Types
 export interface BaseComponentProps {
-    loading?: boolean;
-    disabled?: boolean;
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  loading?: boolean;
+  disabled?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export interface ModalProps extends BaseComponentProps {
-    show: boolean;
-    persistent?: boolean;
-    title?: string;
+  show: boolean;
+  persistent?: boolean;
+  title?: string;
 }
 
 // Router Types
 export interface RouteGuardContext {
-    isAuthenticated: boolean;
-    user?: User;
-    requiredRole?: 'user' | 'admin';
+  isAuthenticated: boolean;
+  user?: User;
+  requiredRole?: 'user' | 'admin';
 }
 
 // Store Types
 export interface AuthState {
-    isAuthenticated: boolean;
-    user: User | null;
-    token: string | null;
-    loading: boolean;
+  isAuthenticated: boolean;
+  user: User | null;
+  token: string | null;
+  loading: boolean;
 }
 
 // Utility Types
