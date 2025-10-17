@@ -1,41 +1,32 @@
 <template>
   <q-page class="q-pa-md flex full-height full-width text-white" style="background-color: #B9EAEF;">
     <div class="row justify-center full-width" style="max-width: 1200px; width: 100%;">
-
-      <!-- ==== SIDEBAR ESQUERDA ==== -->
       <div class="col-12 col-md-3 q-pr-md q-mb-md">
-        <!-- Card Perfil -->
         <q-card class="q-pa-md text-center shadow-2 bg-white text-dark sidebar-card">
           <div class="text-h6 text-weight-bold q-mb-sm">Seu Perfil</div>
-
           <q-avatar size="72px" class="q-mb-sm rounded-circle overflow-hidden">
             <img src="https://i.pravatar.cc/150?img=3" alt="Perfil" />
           </q-avatar>
-
           <div class="text-body1 q-mb-xs">Adrian Resende</div>
           <div class="text-grey-7 text-caption">2 Apostas • 90% Precisão</div>
         </q-card>
-
         <q-card class="q-pa-md q-mt-md shadow-2 bg-white text-dark sidebar-card">
           <div class="text-h6 q-mb-sm align-center justify-center flex">🏆 Top Apostadores</div>
           <q-separator spaced />
-
           <q-list dense>
-            <q-item v-for="(bettor, index) in topBettors" :key="bettor.user">
-              <q-item-section avatar>
-                <q-avatar size="40px" class="q-mr-sm">
-                  <img :src="getCrownIcon(index)" alt="Coroa" />
+            <q-item v-for="(bettor, idx) in topBettors" :key="bettor.user">
+              <q-item-section>
+                <q-avatar size="32px" class="q-mr-sm rounded-circle overflow-hidden">
+                  <img v-if="idx === 0" src="/icons/coroaOuro.png" alt="Coroa Ouro" />
+                  <img v-else-if="idx === 1" src="/icons/coroaPrata.png" alt="Coroa Prata" />
+                  <img v-else src="/icons/coroaBronze.png" alt="Coroa Cinza" />
                 </q-avatar>
               </q-item-section>
-
-
               <q-item-section>
                 <div class="text-subtitle2">{{ bettor.user }}</div>
               </q-item-section>
               <q-item-section side>
-                <div class="text-grey-6 text-caption" style="font-size: 10px;">
-                  {{ bettor.precision }}
-                </div>
+                <div class="text-grey">{{ bettor.precision }}</div>
               </q-item-section>
             </q-item>
           </q-list>
@@ -59,7 +50,7 @@
             {{ post.text }}
           </div>
 
-          <div class="image-container q-mb-sm col-6">
+          <q-card class="image-container q-mb-sm col-6">
             <q-img :src="post.image" class="rounded-borders post-image" spinner-color="primary"
               style="width: 100%; height: auto; max-height: 500px; object-fit: contain;" />
             <div class="comments-section col-4 q-ml-md">
@@ -76,12 +67,13 @@
                 </div>
               </div>
             </div>
-          </div>
+          </q-card>
 
           <div class="row justify-between items-start q-pt-sm">
             <div class="actions-section">
-              <q-btn flat dense icon="thumb_up" label="Curtir" class="q-mr-sm text-primary" />
-              <q-btn flat class="text-primary" dense icon="share" label="Compartilhar" />
+              <q-btn round flat dense icon="thumb_up" class="q-mr-sm text-primary" />
+              <q-btn round flat dense icon="thumb_down" class="q-mr-sm text-primary" />
+              <q-btn round flat class="text-primary" dense icon="share" />
             </div>
           </div>
         </q-card>
@@ -169,21 +161,16 @@ const topBettors = ref([
   { user: '@ZecaBets', precision: '80%' },
 ]);
 
-const getCrownIcon = (index: number) => {
-  if (index === 0) return 'https://cdn-icons-png.flaticon.com/512/2583/2583434.png';
-  if (index === 1) return 'https://cdn-icons-png.flaticon.com/512/2583/2583319.png';
-  if (index === 2) return 'https://cdn-icons-png.flaticon.com/512/2583/2583353.png';
-  return 'https://cdn-icons-png.flaticon.com/512/2583/2583434.png';
-};
 </script>
 
 <style scoped>
 .image-container {
   display: flex;
   justify-content: center;
-  background: #f5f5f5;
+  background: #fefefe;
   border-radius: 8px;
   padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .post-image {
@@ -193,13 +180,10 @@ const getCrownIcon = (index: number) => {
   object-fit: contain;
 }
 
-/* Ajuste para o feed central */
 .col-12.col-md-6 {
   min-width: 0;
-  /* Permite que o conteúdo se ajuste */
 }
 
-/* Seção de Ações */
 .actions-section {
   display: flex;
   align-items: center;
@@ -227,7 +211,7 @@ const getCrownIcon = (index: number) => {
 
 .comment-item {
   margin-bottom: 3px;
-  color: #444;
+  color: #000000;
   line-height: 1.3;
 }
 
@@ -256,7 +240,6 @@ const getCrownIcon = (index: number) => {
   transition: border 0.2s, border-radius 0.2s;
 }
 
-/* Ajuste responsivo */
 @media (max-width: 768px) {
   .row.justify-between.items-start {
     flex-direction: column;
