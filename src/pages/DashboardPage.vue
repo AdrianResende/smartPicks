@@ -50,7 +50,7 @@
             {{ post.text }}
           </div>
 
-          <q-card class="image-container q-mb-sm col-6">
+          <q-card class="image-container col-6">
             <q-img :src="post.image" class="rounded-borders post-image" spinner-color="primary"
               style="width: 100%; height: auto; max-height: 500px; object-fit: contain;" />
             <div class="comments-section col-4 q-ml-md">
@@ -60,7 +60,7 @@
                   <q-btn flat dense icon="send" class="text-primary" size="12px" @click="addComment(post)" />
                 </template>
               </q-input>
-              <div v-if="post.comments && post.comments.length" class="comments-list">
+              <div v-if="post.comments && post.comments.length" class="comments-list q-ml-sm bg-grey-1 rounded-borders">
                 <div v-for="(comment, idx) in post.comments" :key="idx" class="comment-item">
                   <span class="comment-user">{{ comment.user }}:</span>
                   <span class="comment-text">{{ comment.text }}</span>
@@ -69,11 +69,20 @@
             </div>
           </q-card>
 
-          <div class="row justify-between items-start q-pt-sm">
+          <div class="row justify-between items-start q-pt-sm q-ml-sm">
             <div class="actions-section">
-              <q-btn round flat dense icon="thumb_up" class="q-mr-sm text-primary" />
-              <q-btn round flat dense icon="thumb_down" class="q-mr-sm text-primary" />
-              <q-btn round flat class="text-primary" dense icon="share" />
+              <q-btn flat size="12px" round dense icon="thumb_up" class="q-mr-sm text-primary">
+                <q-tooltip anchor="center right" self="center left">Curtir</q-tooltip>
+              </q-btn>
+              <q-btn round size="12px" flat dense icon="thumb_down" class="q-mr-sm text-primary">
+                <q-tooltip anchor="center right" self="center left">Não Curtir</q-tooltip>
+              </q-btn>
+              <q-btn round size="12px" flat class="text-primary" dense icon="share">
+                <q-tooltip anchor="center right" self="center left">Compartilhar</q-tooltip>
+              </q-btn>
+              <q-btn round size="12px" flat class="text-primary" dense icon="attach_file">
+                <q-tooltip anchor="center right" self="center left">Copiar Bet</q-tooltip>
+              </q-btn>
             </div>
           </div>
         </q-card>
@@ -164,6 +173,15 @@ const topBettors = ref([
 </script>
 
 <style scoped>
+.post-image {
+  width: 520px !important;
+  height: 220px !important;
+  object-fit: cover !important;
+  border-radius: 10px;
+  margin: 0 auto 8px auto;
+  display: block;
+}
+
 .image-container {
   display: flex;
   justify-content: center;
