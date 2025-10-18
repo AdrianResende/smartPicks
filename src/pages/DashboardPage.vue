@@ -126,7 +126,8 @@ const posts = ref([
     image: 'https://picsum.photos/600/400?random=1',
     comments: [
       { user: 'MariTips', text: 'Parabéns!' },
-      { user: 'ZecaBets', text: 'Mandou bem!' }
+      { user: 'ZecaBets', text: 'Mandou bem!' },
+      { user: 'BetMaster', text: 'Excelente análise do jogo, concordo plenamente com suas observações sobre o time!' }
     ],
     newComment: ''
   },
@@ -222,27 +223,49 @@ const topBettors = ref([
 }
 
 .comments-list {
-  max-height: 140px;
+  max-height: 170px;
   overflow-y: auto;
   font-size: 0.85em;
   margin-top: 4px;
+  width: 100%;
 }
 
 .comment-item {
-  margin-bottom: 3px;
+  margin-bottom: 8px;
   color: #000000;
-  line-height: 1.3;
+  line-height: 1.4;
+  word-wrap: break-word;
+  padding: 4px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .comment-user {
   font-weight: 600;
-  margin-right: 4px;
+  margin-right: 6px;
   font-size: 0.9em;
+  display: inline;
+  white-space: normal;
 }
 
 .comment-text {
-  font-weight: 400;
+  font-weight: 500;
   font-size: 0.9em;
+  display: inline;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* Garantir que o texto quebre corretamente */
+.comment-item {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .q-avatar.rounded-circle img,
@@ -273,6 +296,11 @@ const topBettors = ref([
     width: 100%;
     justify-content: center;
     margin-bottom: 8px;
+  }
+
+  .comment-item {
+    margin-bottom: 6px;
+    padding: 3px 0;
   }
 }
 </style>
