@@ -60,7 +60,8 @@
                   <q-btn flat dense icon="send" class="text-primary" size="12px" @click="addComment(post)" />
                 </template>
               </q-input>
-              <div v-if="post.comments && post.comments.length" class="comments-list q-ml-sm bg-grey-1 rounded-borders">
+              <div v-if="post.comments && post.comments.length"
+                class="comments-list q-ml-sm q-mt-sm q-pa-sm bg-grey-1 rounded-borders">
                 <div v-for="(comment, idx) in post.comments" :key="idx" class="comment-item">
                   <span class="comment-user">{{ comment.user }}:</span>
                   <span class="comment-text">{{ comment.text }}</span>
