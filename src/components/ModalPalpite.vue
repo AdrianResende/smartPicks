@@ -167,38 +167,22 @@ const enviarPalpite = async () => {
   try {
     const formData = new FormData();
     formData.append('image', imagemPalpite.value as File);
+    formData.append('user_id', userId.value.toString());
 
-    const uploadResponse = await api.post('/upload', formData, {
+    if (tituloComentario.value.trim() !== '') {
+      formData.append('titulo', tituloComentario.value.trim());
+    }
+
+    if (linkAposta.value.trim() !== '') {
+      formData.append('link', linkAposta.value.trim());
+    }
+
+    const response = await api.post('/palpites', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       },
       timeout: 30000
     });
-
-
-    if (!uploadResponse.data.success) {
-      throw new Error(uploadResponse.data.message || 'Erro no upload');
-    }
-
-    const imageUrl = uploadResponse.data.image_url;
-    console.log('Imagem uploadada com sucesso:', imageUrl);
-
-
-    const palpiteData: any = {
-      user_id: userId.value,
-      img_url: imageUrl
-    };
-
-
-    if (tituloComentario.value.trim() !== '') {
-      palpiteData.titulo = tituloComentario.value.trim();
-    }
-
-    if (linkAposta.value.trim() !== '') {
-      palpiteData.link = linkAposta.value.trim();
-    }
-
-    const response = await api.post('/palpites', palpiteData);
 
     if (response.status === 200 || response.status === 201) {
       fecharModal();

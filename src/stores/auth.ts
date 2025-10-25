@@ -532,7 +532,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-
+  const getPalpites = async () => {
+    try {
+      const response = await api.get('/palpites');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar palpites:', error);
+      toast.error('Erro ao carregar palpites');
+      return [];
+    }
+  };
 
   const removeAvatar = async (): Promise<boolean> => {
     try {
@@ -590,5 +599,6 @@ export const useAuthStore = defineStore('auth', () => {
     checkTableStatus,
     uploadAvatar,
     removeAvatar,
+    getPalpites,
   };
 });
