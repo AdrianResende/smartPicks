@@ -23,11 +23,14 @@
             <q-tooltip>Buscar</q-tooltip>
           </q-btn>
 
-          <UserAvatar :size="$q.screen.lt.sm ? '35px' : '40px'" />
-
-          <span class="AppHeader-welcome gt-sm">
-            Olá, {{ userName }}!
-          </span>
+          <div class="AppHeader-user-info gt-sm">
+            <div v-if="showAvatar" class="AppHeader-user-info gt-sm">
+              <UserAvatar :size="'36px'" class="q-mr-sm" />
+            </div>
+            <span class="AppHeader-welcome">
+              Olá, {{ userName }}!
+            </span>
+          </div>
 
           <q-btn class="AppHeader-new-bet gt-sm" rounded color="primary" label="Novo Palpite" no-caps icon="add"
             unelevated @click="dialog = true" />
@@ -36,6 +39,9 @@
             @click="dialog = true">
             <q-tooltip>Novo Palpite</q-tooltip>
           </q-btn>
+          <div class="lt-md AppHeader-user-mobile">
+            <UserAvatar :size="'32px'" class="q-mr-sm" />
+          </div>
 
           <q-btn class="AppHeader-logout gt-xs" unelevated rounded color="negative" text-color="white" icon="logout"
             label="Sair" :loading="loggingOut" @click="onLogout" no-caps>
@@ -70,16 +76,17 @@
     </q-card>
   </q-dialog>
 
-  <ModalPalpite v-model:show="dialog" @close="dialog = false" @novo-palpite="onNovoPalpite" />
+  <ModalPalpite v-model:show="dialog" @close="dialog = false" @novo-palpite="onNovoPalpite"
+    @palpite-criado="handlePalpiteCriado" />
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
-import UserAvatar from 'src/components/UserAvatar.vue';
 import { QLayout, QHeader, QToolbar, QBtn, QIcon, QInput, QPageContainer, QTooltip } from 'quasar';
 import ModalPalpite from 'src/components/ModalPalpite.vue';
+import UserAvatar from 'src/components/UserAvatar.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -88,7 +95,28 @@ const searchQuery = ref('');
 const userName = computed(() => authStore.user?.nome || 'Usuário');
 const dialog = ref(false);
 const showSearchModal = ref(false);
-const mobileSearchQuery = ref('');
+const mobileSearchQuery = ref(''); const showAvatar = ref(false);
+
+const canShowAvatar = () => {
+  return window.scrollY > 150;
+};
+
+const handleScroll = () => {
+  showAvatar.value = canShowAvatar();
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+const handlePalpiteCriado = () => {
+  emit('palpite-criado');
+};
 
 const onLogout = async () => {
   loggingOut.value = true;
@@ -113,6 +141,9 @@ const performSearch = () => {
     mobileSearchQuery.value = '';
   }
 };
+const emit = defineEmits<{
+  (e: 'palpite-criado'): void
+}>();
 </script>
 
 <style scoped>
@@ -178,11 +209,21 @@ const performSearch = () => {
   flex-shrink: 0;
 }
 
+.AppHeader-user-info {
+  display: flex;
+  align-items: center;
+  margin: 0 12px;
+}
+
 .AppHeader-welcome {
   font-weight: 500;
-  margin: 0 12px;
   white-space: nowrap;
   font-size: 14px;
+}
+
+.AppHeader-user-mobile {
+  display: flex;
+  align-items: center;
 }
 
 .AppHeader-new-bet {
@@ -201,7 +242,7 @@ const performSearch = () => {
   margin: 0 4px;
 }
 
-@media (max-width: 1200px) {
+@media(max-width: 1200px) {
   .AppHeader-search-container {
     max-width: 350px;
     margin: 0 16px;
@@ -209,11 +250,10 @@ const performSearch = () => {
 
   .AppHeader-welcome {
     font-size: 13px;
-    margin: 0 8px;
   }
 }
 
-@media (max-width: 1024px) {
+@media(max-width: 1024px) {
   .AppHeader-logo {
     width: 150px;
     height: 50px;
@@ -230,7 +270,7 @@ const performSearch = () => {
   }
 }
 
-@media (max-width: 768px) {
+@media(max-width: 768px) {
   .AppHeader-toolbar {
     padding: 0 12px;
     gap: 6px;
@@ -252,7 +292,7 @@ const performSearch = () => {
   }
 }
 
-@media (max-width: 600px) {
+@media(max-width: 600px) {
   .AppHeader-toolbar {
     padding: 0 8px;
     gap: 4px;
@@ -274,7 +314,7 @@ const performSearch = () => {
   }
 }
 
-@media (max-width: 480px) {
+@media(max-width: 480px) {
   .AppHeader-logo {
     width: 80px;
     height: 30px;
@@ -287,7 +327,7 @@ const performSearch = () => {
   }
 }
 
-@media (max-width: 400px) {
+@media(max-width: 400px) {
   .AppHeader-toolbar {
     padding: 0 4px;
   }
@@ -299,7 +339,6 @@ const performSearch = () => {
 
   .AppHeader-name {
     display: none;
-    /* Esconder nome em telas muito pequenas */
   }
 }
 

@@ -1,294 +1,290 @@
 <template>
-  <div class="avatar-upload">
+  <div class="avatar-container">
     <!-- Avatar principal -->
-    <q-avatar
-      :size="size"
-      :color="user?.avatar ? 'transparent' : 'primary'"
-      :text-color="user?.avatar ? 'transparent' : 'white'"
-      class="cursor-pointer"
-      @click="openUploadDialog"
-    >
-      <q-img v-if="user?.avatar" :src="user.avatar" />
-      <q-icon v-else name="person" :size="iconSize" />
+    <q-avatar :size="size" class="cursor-pointer user-avatar" :class="{ 'editable': editable }"
+      @click="openUploadDialog">
+      <img v-if="avatarUrl" :src="avatarUrl" :alt="altText" @error="handleImageError" />
+      <q-icon v-else name="person" :size="iconSize" color="grey-6" />
+
+      <div v-if="editable" class="edit-overlay">
+        <q-icon name="photo_camera" size="16px" />
+      </div>
 
       <q-tooltip v-if="editable">
-        {{ user?.avatar ? 'Alterar avatar' : 'Adicionar avatar' }}
+        {{ avatarUrl ? 'Alterar avatar' : 'Adicionar avatar' }}
       </q-tooltip>
     </q-avatar>
 
-    <!-- Dialog de upload -->
+    <!-- Dialog de upload simplificado -->
     <q-dialog v-model="showUploadDialog" persistent>
-      <q-card class="q-pa-md rounded-borders shadow-2" style="min-width: 400px">
+      <q-card class="upload-card">
         <q-card-section class="text-center">
-          <div class="text-h6">
-            {{ user?.avatar ? 'Alterar Avatar' : 'Adicionar Avatar' }}
-          </div>
+          <div class="text-h6">Alterar Avatar</div>
         </q-card-section>
 
-        <q-card-section class="text-center">
-          <q-avatar size="140px" class="shadow-1 q-mb-md" rounded>
-            <q-img
-              v-if="previewUrl || user?.avatar"
-              :src="previewUrl || user?.avatar"
-              class="q-img-cover"
-            />
-            <q-icon v-else name="person" size="70px" color="grey-5" />
-          </q-avatar>
-          <q-btn
-            v-if="previewUrl || user?.avatar"
-            fab-mini
-            color="negative"
-            icon="close"
-            class="absolute-top-right"
-            @click="clearPreview"
-            :disable="isProcessing"
-          />
-          <q-linear-progress
-            v-if="isUploading && uploadProgress > 0"
-            :value="uploadProgress / 100"
-            color="primary"
-            size="8px"
-            rounded
-            class="q-mb-md"
-          />
-
-          <div v-if="isOptimizing" class="text-center q-mb-md">
-            <q-spinner-dots size="20px" color="primary" />
-            <div class="text-caption text-primary q-mt-xs">
-              Otimizando imagem para alta qualidade...
-            </div>
+        <q-card-section class="text-center q-pt-none">
+          <!-- Preview do avatar -->
+          <div class="preview-container q-mb-md">
+            <q-avatar size="120px" class="preview-avatar">
+              <img v-if="previewUrl || avatarUrl" :src="(previewUrl || avatarUrl)!" class="avatar-image" />
+              <q-icon v-else name="person" size="50px" color="grey-5" />
+            </q-avatar>
           </div>
-          <q-file
-            v-model="selectedFile"
-            outlined
-            rounded
-            label="Escolher nova imagem"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            max-file-size="10485760"
-            @update:model-value="onFileSelected"
-            @rejected="onFileRejected"
-            class="full-width q-mb-md"
-            :error="!!fileError"
-            :error-message="fileError"
-            :disable="isProcessing"
-          >
+
+          <!-- Upload de arquivo -->
+          <q-file v-model="selectedFile" outlined dense label="Escolher imagem" accept=".jpg,.jpeg,.png,.gif,.webp"
+            max-file-size="5242880" @update:model-value="onFileSelected" class="full-width" :loading="isUploading">
             <template v-slot:prepend>
-              <q-icon name="image" color="primary" />
-            </template>
-            <template v-slot:append>
-              <q-btn round dense flat icon="info" color="info" size="sm">
-                <q-tooltip class="bg-info">
-                  <div class="text-body2">
-                    <strong>Formatos:</strong> JPG, PNG, GIF, WebP<br />
-                    <strong>Tamanho máximo:</strong> 10MB<br />
-                    <strong>Resolução recomendada:</strong> 800x800px ou superior
-                  </div>
-                </q-tooltip>
-              </q-btn>
+              <q-icon name="attach_file" />
             </template>
           </q-file>
 
-          <div class="text-caption text-grey-6">
-            💡 A imagem será otimizada automaticamente<br />
-            🎯 Recomendamos resolução mínima de 800x800px
+          <div class="text-caption text-grey q-mt-sm">
+            Formatos: JPG, PNG, GIF, WebP • Máx: 5MB
           </div>
         </q-card-section>
 
-        <q-card-actions align="center" class="q-pt-md q-pb-lg q-px-lg">
-          <q-btn flat label="Cancelar" @click="closeDialog" :disable="isProcessing" />
-          <q-btn
-            v-if="user?.avatar && !previewUrl"
-            flat
-            color="negative"
-            label="Remover Avatar"
-            icon="delete"
-            @click="handleRemoveAvatar"
-            :loading="isRemoving"
-            :disable="isUploading"
-          />
-          <q-btn
-            unelevated
-            rounded
-            color="primary"
-            :label="user?.avatar ? 'Atualizar' : 'Salvar'"
-            icon="save"
-            @click="handleUploadAvatar"
-            :loading="isUploading"
-            :disable="!canSave"
-          />
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat label="Cancelar" color="grey" @click="closeDialog" :disable="isUploading" />
+          <q-btn v-if="avatarUrl" flat label="Remover" color="negative" @click="removeAvatar" :loading="isUploading" />
+          <q-btn unelevated label="Salvar" color="primary" @click="uploadAvatar" :loading="isUploading"
+            :disable="!selectedFile" />
         </q-card-actions>
-
-        <q-inner-loading :showing="isProcessing">
-          <q-spinner-dots size="50px" color="primary" />
-        </q-inner-loading>
       </q-card>
     </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useAuthStore } from 'src/stores/auth';
 import { useQuasar } from 'quasar';
-
-defineOptions({ name: 'UserAvatar' });
 
 interface Props {
   size?: string;
   editable?: boolean;
+  userId?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: '48px',
-  editable: true,
+  editable: true
 });
 
 const $q = useQuasar();
 const authStore = useAuthStore();
 
+// Refs
 const showUploadDialog = ref(false);
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string | null>(null);
-const fileError = ref('');
 const isUploading = ref(false);
-const isRemoving = ref(false);
-const uploadProgress = ref(0);
-const isOptimizing = ref(false);
+const hasError = ref(false);
 
+// Computed
 const user = computed(() => authStore.user);
-const isProcessing = computed(() => isUploading.value || isRemoving.value || isOptimizing.value);
-const canSave = computed(() => selectedFile.value && !fileError.value && !isProcessing.value);
-const iconSize = computed(() =>
-  parseInt(props.size) > 60 ? 'lg' : parseInt(props.size) > 40 ? 'md' : 'sm',
-);
+const avatarUrl = computed(() => {
+  if (hasError.value) return null;
+  return user.value?.avatar || null;
+});
 
+const altText = computed(() => user.value?.nome || 'Usuário');
+const iconSize = computed(() => {
+  const sizeNum = parseInt(props.size);
+  if (sizeNum > 60) return 'lg';
+  if (sizeNum > 40) return 'md';
+  return 'sm';
+});
+
+// Methods
 const openUploadDialog = () => {
-  if (props.editable) showUploadDialog.value = true;
+  if (props.editable) {
+    showUploadDialog.value = true;
+  }
 };
+
 const closeDialog = () => {
   showUploadDialog.value = false;
-  clearPreview();
-};
-const clearPreview = () => {
   selectedFile.value = null;
   previewUrl.value = null;
-  fileError.value = '';
-  uploadProgress.value = 0;
+  hasError.value = false;
 };
 
-const validateFile = (file: File) => {
-  const maxSize = 10 * 1024 * 1024;
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-  if (!allowedTypes.includes(file.type)) return 'Formato não suportado. Use JPG, PNG, GIF ou WebP.';
-  if (file.size > maxSize) return 'Arquivo muito grande. Máximo permitido: 10MB.';
-  return null;
+const handleImageError = () => {
+  console.warn('Erro ao carregar avatar, usando fallback');
+  hasError.value = true;
 };
 
-const createImagePreview = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target?.result as string);
-    reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
-    reader.readAsDataURL(file);
-  });
-
-const resizeAndOptimizeImage = (file: File) =>
-  new Promise<File>((resolve, reject) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-
-    img.onload = () => {
-      const targetSize = 800;
-      canvas.width = targetSize;
-      canvas.height = targetSize;
-
-      if (!ctx) return reject(new Error('Erro ao criar contexto'));
-
-      const size = Math.min(img.width, img.height);
-      const offsetX = (img.width - size) / 2;
-      const offsetY = (img.height - size) / 2;
-
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, targetSize, targetSize);
-
-      canvas.toBlob((blob) => {
-        if (!blob) return reject(new Error('Erro ao processar imagem'));
-        resolve(new File([blob], `avatar_${Date.now()}.jpg`, { type: 'image/jpeg' }));
-      }, 'image/jpeg');
-    };
-
-    img.onerror = () => reject(new Error('Erro ao carregar imagem'));
-    img.src = URL.createObjectURL(file);
-  });
-
-const onFileSelected = async (file: File | null) => {
-  if (!file) return clearPreview();
-  const error = validateFile(file);
-  if (error) {
-    fileError.value = error;
-    selectedFile.value = null;
+const onFileSelected = (file: File | null) => {
+  if (!file) {
+    previewUrl.value = null;
     return;
   }
 
-  try {
-    isOptimizing.value = true;
-    previewUrl.value = await createImagePreview(file);
-    selectedFile.value = await resizeAndOptimizeImage(file);
-    previewUrl.value = await createImagePreview(selectedFile.value);
-  } catch {
-    fileError.value = 'Erro ao processar imagem';
-    selectedFile.value = previewUrl.value = null;
-  } finally {
-    isOptimizing.value = false;
-  }
+  // Criar preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewUrl.value = e.target?.result as string;
+  };
+  reader.readAsDataURL(file);
 };
 
-const onFileRejected = () => {
-  fileError.value = 'Arquivo rejeitado. Verifique formato/tamanho.';
-};
-
-const handleUploadAvatar = async () => {
+const uploadAvatar = async () => {
   if (!selectedFile.value) return;
+
   isUploading.value = true;
-  uploadProgress.value = 20;
 
   try {
+    // Validar arquivo
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(selectedFile.value.type)) {
+      throw new Error('Tipo de arquivo não suportado');
+    }
+
+    if (selectedFile.value.size > 5 * 1024 * 1024) {
+      throw new Error('Arquivo muito grande (máx. 5MB)');
+    }
+
+    // Fazer upload
     await authStore.uploadAvatar(selectedFile.value);
-    uploadProgress.value = 100;
+
+    $q.notify({
+      type: 'positive',
+      message: 'Avatar atualizado com sucesso!',
+      position: 'top'
+    });
+
     closeDialog();
+  } catch (error) {
+    console.error('Erro ao fazer upload:', error);
+    $q.notify({
+      type: 'negative',
+      message: error instanceof Error ? error.message : 'Erro ao atualizar avatar',
+      position: 'top'
+    });
   } finally {
     isUploading.value = false;
-    uploadProgress.value = 0;
   }
 };
 
-const handleRemoveAvatar = () => {
-  $q.dialog({
-    title: 'Confirmar',
-    message: 'Tem certeza que deseja remover seu avatar?',
-    ok: { push: true, color: 'negative', label: 'Remover' },
-    cancel: { push: true, color: 'grey', label: 'Cancelar' },
-    persistent: true,
-  }).onOk(() => {
-    void (async () => {
-      isRemoving.value = true;
-      try {
-        await authStore.removeAvatar();
-        closeDialog();
-      } finally {
-        isRemoving.value = false;
-      }
-    })();
-  });
+const removeAvatar = async () => {
+  isUploading.value = true;
+
+  try {
+    await authStore.removeAvatar();
+
+    $q.notify({
+      type: 'positive',
+      message: 'Avatar removido com sucesso!',
+      position: 'top'
+    });
+
+    closeDialog();
+  } catch (error) {
+    console.error('Erro ao remover avatar:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Erro ao remover avatar',
+      position: 'top'
+    });
+  } finally {
+    isUploading.value = false;
+  }
 };
+
+// Watch para resetar error quando avatar mudar
+watch(avatarUrl, (newUrl) => {
+  if (newUrl) {
+    hasError.value = false;
+  }
+});
 </script>
 
 <style scoped>
-.absolute-top-right {
+.avatar-container {
+  display: inline-block;
+  position: relative;
+}
+
+.user-avatar {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.user-avatar.editable:hover {
+  border-color: var(--q-primary);
+  transform: scale(1.05);
+}
+
+.edit-overlay {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  bottom: 0;
+  right: 0;
+  background: var(--q-primary);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.user-avatar.editable:hover .edit-overlay {
+  opacity: 1;
+}
+
+.upload-card {
+  min-width: 350px;
+  border-radius: 12px;
+}
+
+.preview-container {
+  position: relative;
+  display: inline-block;
+}
+
+.preview-avatar {
+  border: 3px solid var(--q-primary);
+  background: white;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Estilos responsivos */
+@media (max-width: 600px) {
+  .upload-card {
+    min-width: 300px;
+    margin: 16px;
+  }
+
+  .preview-avatar {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Animações */
+.q-avatar {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
