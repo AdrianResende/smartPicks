@@ -1,12 +1,12 @@
 import { ref } from 'vue';
 
-type EventCallback = (...args: []) => void;
+type EventCallback = (...args: any[]) => void;
 type EventMap = Record<string, EventCallback[]>;
 
 const eventBus = ref<EventMap>({});
 
 export function useEventBus() {
-  const emit = (event: string, ...args: []): void => {
+  const emit = (event: string, ...args: any[]): void => {
     if (eventBus.value[event]) {
       eventBus.value[event].forEach(callback => callback(...args));
     }
