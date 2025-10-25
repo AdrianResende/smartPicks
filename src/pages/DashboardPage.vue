@@ -47,10 +47,8 @@ onMounted(async () => {
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 2rem;
+  text-align: center;
 }
 
 .welcome-section {
@@ -62,6 +60,7 @@ onMounted(async () => {
   backdrop-filter: blur(10px);
   max-width: 500px;
   width: 100%;
+  margin: 0 auto;
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
